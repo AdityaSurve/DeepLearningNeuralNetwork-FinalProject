@@ -1,0 +1,171 @@
+{
+    "Sex": {
+        "Female": {
+            "Accuracy": 0.7926209711001916,
+            "F1": 0.31310344827586206,
+            "Recall": 0.6899696048632219,
+            "Precision": 0.2024977698483497,
+            "ROC_AUC": 0.8263382441043776,
+            "Count": 24014,
+            "Model": "logistic_regression",
+            "Attribute": "Sex",
+            "Group": "Female"
+        },
+        "Male": {
+            "Accuracy": 0.6896064771229523,
+            "F1": 0.38154192459200903,
+            "Recall": 0.8322422258592471,
+            "Precision": 0.24750547578486248,
+            "ROC_AUC": 0.8277199263502455,
+            "Count": 21244,
+            "Model": "logistic_regression",
+            "Attribute": "Sex",
+            "Group": "Male"
+        }
+    },
+    "AgeCategory": {
+        "18-24": {
+            "Accuracy": 0.9940964250573958,
+            "F1": 0.0,
+            "Recall": 0.0,
+            "Precision": 0.0,
+            "ROC_AUC": 0.6113493896403827,
+            "Count": 3049,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "18-24"
+        },
+        "25-29": {
+            "Accuracy": 0.9875301689460981,
+            "F1": 0.06060606060606061,
+            "Recall": 0.04,
+            "Precision": 0.125,
+            "ROC_AUC": 0.4819829337667615,
+            "Count": 2486,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "25-29"
+        },
+        "30-34": {
+            "Accuracy": 0.9820089955022488,
+            "F1": 0.1111111111111111,
+            "Recall": 0.07692307692307693,
+            "Precision": 0.2,
+            "ROC_AUC": 0.7380597087710058,
+            "Count": 2668,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "30-34"
+        },
+        "35-39": {
+            "Accuracy": 0.9795564795564795,
+            "F1": 0.16901408450704225,
+            "Recall": 0.12244897959183673,
+            "Precision": 0.2727272727272727,
+            "ROC_AUC": 0.7284210829203023,
+            "Count": 2886,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "35-39"
+        },
+        "40-44": {
+            "Accuracy": 0.96,
+            "F1": 0.23684210526315788,
+            "Recall": 0.2222222222222222,
+            "Precision": 0.2535211267605634,
+            "ROC_AUC": 0.7665313415579468,
+            "Count": 2900,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "40-44"
+        },
+        "45-49": {
+            "Accuracy": 0.9300744577533182,
+            "F1": 0.3032258064516129,
+            "Recall": 0.415929203539823,
+            "Precision": 0.23857868020304568,
+            "ROC_AUC": 0.8439982990769817,
+            "Count": 3089,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "45-49"
+        },
+        "50-54": {
+            "Accuracy": 0.8563859453430006,
+            "F1": 0.29160935350756534,
+            "Recall": 0.5145631067961165,
+            "Precision": 0.2034548944337812,
+            "ROC_AUC": 0.7836423565232378,
+            "Count": 3586,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "50-54"
+        },
+        "55-59": {
+            "Accuracy": 0.7577208522863299,
+            "F1": 0.2719424460431655,
+            "Recall": 0.6385135135135135,
+            "Precision": 0.17276051188299818,
+            "ROC_AUC": 0.7778774974407543,
+            "Count": 4177,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "55-59"
+        },
+        "60-64": {
+            "Accuracy": 0.675945601359966,
+            "F1": 0.3213173119715176,
+            "Recall": 0.7322515212981744,
+            "Precision": 0.20581527936145952,
+            "ROC_AUC": 0.7672853126779903,
+            "Count": 4706,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "60-64"
+        },
+        "65-69": {
+            "Accuracy": 0.5875682486350273,
+            "F1": 0.330150068212824,
+            "Recall": 0.7831715210355987,
+            "Precision": 0.20916162489196197,
+            "ROC_AUC": 0.7466762879384239,
+            "Count": 4762,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "65-69"
+        },
+        "70-74": {
+            "Accuracy": 0.4983560356975106,
+            "F1": 0.3623880597014925,
+            "Recall": 0.8683834048640916,
+            "Precision": 0.22897019992455678,
+            "ROC_AUC": 0.7344211073419621,
+            "Count": 4258,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "70-74"
+        },
+        "75-79": {
+            "Accuracy": 0.4458860759493671,
+            "F1": 0.39222492190211733,
+            "Recall": 0.9112903225806451,
+            "Precision": 0.24988942945599293,
+            "ROC_AUC": 0.7327425704851409,
+            "Count": 3160,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "75-79"
+        },
+        "80 or older": {
+            "Accuracy": 0.3817615406400453,
+            "F1": 0.4174005871363758,
+            "Recall": 0.9399038461538461,
+            "Precision": 0.26826758147512864,
+            "ROC_AUC": 0.7067439062188274,
+            "Count": 3531,
+            "Model": "logistic_regression",
+            "Attribute": "AgeCategory",
+            "Group": "80 or older"
+        }
+    }
+}

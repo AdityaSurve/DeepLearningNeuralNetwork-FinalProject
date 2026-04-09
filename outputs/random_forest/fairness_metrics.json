@@ -1,0 +1,171 @@
+{
+    "Sex": {
+        "Female": {
+            "Accuracy": 0.7993670358957274,
+            "F1": 0.3142613151152861,
+            "Recall": 0.6711246200607903,
+            "Precision": 0.20516632596171716,
+            "ROC_AUC": 0.8203300649060977,
+            "Count": 24014,
+            "Model": "random_forest",
+            "Attribute": "Sex",
+            "Group": "Female"
+        },
+        "Male": {
+            "Accuracy": 0.7141310487667106,
+            "F1": 0.3882341089956684,
+            "Recall": 0.7884615384615384,
+            "Precision": 0.257517038620874,
+            "ROC_AUC": 0.818441569888916,
+            "Count": 21244,
+            "Model": "random_forest",
+            "Attribute": "Sex",
+            "Group": "Male"
+        }
+    },
+    "AgeCategory": {
+        "18-24": {
+            "Accuracy": 0.9855690390291899,
+            "F1": 0.15384615384615385,
+            "Recall": 0.2222222222222222,
+            "Precision": 0.11764705882352941,
+            "ROC_AUC": 0.6372484328604422,
+            "Count": 3049,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "18-24"
+        },
+        "25-29": {
+            "Accuracy": 0.9730490748189863,
+            "F1": 0.056338028169014086,
+            "Recall": 0.08,
+            "Precision": 0.043478260869565216,
+            "ROC_AUC": 0.5285737505079235,
+            "Count": 2486,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "25-29"
+        },
+        "30-34": {
+            "Accuracy": 0.969640179910045,
+            "F1": 0.16494845360824742,
+            "Recall": 0.20512820512820512,
+            "Precision": 0.13793103448275862,
+            "ROC_AUC": 0.7407515775716612,
+            "Count": 2668,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "30-34"
+        },
+        "35-39": {
+            "Accuracy": 0.9518364518364518,
+            "F1": 0.13664596273291926,
+            "Recall": 0.22448979591836735,
+            "Precision": 0.09821428571428571,
+            "ROC_AUC": 0.7375317416356744,
+            "Count": 2886,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "35-39"
+        },
+        "40-44": {
+            "Accuracy": 0.9041379310344828,
+            "F1": 0.19653179190751446,
+            "Recall": 0.41975308641975306,
+            "Precision": 0.12830188679245283,
+            "ROC_AUC": 0.7746180021809678,
+            "Count": 2900,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "40-44"
+        },
+        "45-49": {
+            "Accuracy": 0.8743930074457753,
+            "F1": 0.24806201550387597,
+            "Recall": 0.5663716814159292,
+            "Precision": 0.1588089330024814,
+            "ROC_AUC": 0.8409741055285946,
+            "Count": 3089,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "45-49"
+        },
+        "50-54": {
+            "Accuracy": 0.8128834355828221,
+            "F1": 0.26182618261826185,
+            "Recall": 0.5776699029126213,
+            "Precision": 0.16927453769559034,
+            "ROC_AUC": 0.7792202849428391,
+            "Count": 3586,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "50-54"
+        },
+        "55-59": {
+            "Accuracy": 0.7512568829303328,
+            "F1": 0.27189908899789766,
+            "Recall": 0.6554054054054054,
+            "Precision": 0.17152961980548187,
+            "ROC_AUC": 0.7793738727132182,
+            "Count": 4177,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "55-59"
+        },
+        "60-64": {
+            "Accuracy": 0.7169570760730982,
+            "F1": 0.3299798792756539,
+            "Recall": 0.665314401622718,
+            "Precision": 0.2193979933110368,
+            "ROC_AUC": 0.7599042661827656,
+            "Count": 4706,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "60-64"
+        },
+        "65-69": {
+            "Accuracy": 0.6755564888702226,
+            "F1": 0.3511129777404452,
+            "Recall": 0.6763754045307443,
+            "Precision": 0.23709585933068633,
+            "ROC_AUC": 0.737761383089053,
+            "Count": 4762,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "65-69"
+        },
+        "70-74": {
+            "Accuracy": 0.5749178017848755,
+            "F1": 0.3822525597269625,
+            "Recall": 0.8011444921316166,
+            "Precision": 0.2510085163603765,
+            "ROC_AUC": 0.7281252349018648,
+            "Count": 4258,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "70-74"
+        },
+        "75-79": {
+            "Accuracy": 0.5506329113924051,
+            "F1": 0.42088091353996737,
+            "Recall": 0.832258064516129,
+            "Precision": 0.2816593886462882,
+            "ROC_AUC": 0.7284623444246888,
+            "Count": 3160,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "75-79"
+        },
+        "80 or older": {
+            "Accuracy": 0.4117813650523931,
+            "F1": 0.426718189345846,
+            "Recall": 0.9290865384615384,
+            "Precision": 0.27696166248656395,
+            "ROC_AUC": 0.7059621440989541,
+            "Count": 3531,
+            "Model": "random_forest",
+            "Attribute": "AgeCategory",
+            "Group": "80 or older"
+        }
+    }
+}

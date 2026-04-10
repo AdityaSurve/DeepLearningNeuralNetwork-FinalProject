@@ -35,7 +35,15 @@ def evaluate_fairness(y_true, y_pred, y_prob, group, group_name):
     return results
 
 def main():
-    models = ['logistic_regression', 'random_forest', 'xgboost', 'lightgbm', 'mlp', 'custom_architecture']
+    models = [
+        'logistic_regression',
+        'random_forest',
+        'xgboost',
+        'lightgbm',
+        'mlp',
+        'custom_architecture_balanced',
+        'custom_architecture_accuracy',
+    ]
     
     # Load test labels and raw features
     df_raw = pd.read_csv('data/processed/X_test_raw.csv')

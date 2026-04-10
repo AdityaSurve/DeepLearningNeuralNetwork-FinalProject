@@ -177,9 +177,11 @@ def main():
         final_div_factor=1e4,
     )
 
-    output_dir = "outputs/custom_architecture"
-    os.makedirs("checkpoints/custom_architecture", exist_ok=True)
-    checkpoint_path = "checkpoints/custom_architecture/best_model.pt"
+    # Write separate artifacts per mode so you can report both.
+    model_tag = f"custom_architecture_{objective_mode}"
+    output_dir = f"outputs/{model_tag}"
+    os.makedirs(f"checkpoints/{model_tag}", exist_ok=True)
+    checkpoint_path = f"checkpoints/{model_tag}/best_model.pt"
 
     use_ema = os.environ.get("USE_EMA", "1").strip().lower() not in (
         "0",
@@ -225,7 +227,7 @@ def main():
         best_model,
         test_loader,
         output_dir,
-        "CustomArchitecture",
+        model_tag,
         device=device,
         threshold=thr,
     )

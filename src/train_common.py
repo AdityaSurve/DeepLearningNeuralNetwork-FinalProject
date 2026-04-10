@@ -134,14 +134,36 @@ def plot_learning_curves(history, output_dir):
     plt.savefig(os.path.join(output_dir, 'loss_curve.png'))
     plt.close()
     
-    plt.figure()
-    plt.plot(epochs, history['val_auc'], label='Validation')
-    plt.title('AUC Curve')
-    plt.xlabel('Epochs')
-    plt.ylabel('AUC')
-    plt.legend()
-    plt.savefig(os.path.join(output_dir, 'auroc_curve.png'))
-    plt.close()
+    # Backward/forward compatible metric plotting.
+    if 'val_auc' in history and len(history['val_auc']) == len(history['train_loss']):
+        plt.figure()
+        plt.plot(epochs, history['val_auc'], label='Validation')
+        plt.title('AUC Curve')
+        plt.xlabel('Epochs')
+        plt.ylabel('AUC')
+        plt.legend()
+        plt.savefig(os.path.join(output_dir, 'auroc_curve.png'))
+        plt.close()
+
+    if 'val_auroc' in history and len(history['val_auroc']) == len(history['train_loss']):
+        plt.figure()
+        plt.plot(epochs, history['val_auroc'], label='Validation AUROC')
+        plt.title('AUROC Curve')
+        plt.xlabel('Epochs')
+        plt.ylabel('AUROC')
+        plt.legend()
+        plt.savefig(os.path.join(output_dir, 'auroc_curve.png'))
+        plt.close()
+
+    if 'val_auprc' in history and len(history['val_auprc']) == len(history['train_loss']):
+        plt.figure()
+        plt.plot(epochs, history['val_auprc'], label='Validation AUPRC')
+        plt.title('AUPRC Curve')
+        plt.xlabel('Epochs')
+        plt.ylabel('AUPRC')
+        plt.legend()
+        plt.savefig(os.path.join(output_dir, 'auprc_curve.png'))
+        plt.close()
 
     if 'val_acc' in history and len(history['val_acc']) == len(history['train_loss']):
         plt.figure()

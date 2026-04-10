@@ -90,9 +90,20 @@ def main():
         torch.tensor(y_test, dtype=torch.float32),
     )
 
-    # Balanced sampling helps the model actually learn the minority class
-    # (and avoids being stuck at the all-negative accuracy baseline).
-    use_balanced_sampler = os.environ.get("BALANCED_SAMPLER", "1").strip().lower() not in (
+    # Objective profile:
+    # - balanced: better minority recall/balanced accuracy (fairness-oriented)
+    # - accuracy: better plain accuracy (majority-oriented)
+    objective_mode = os.environ.get("OBJECTIVE_MODE", "balanced").strip().lower()
+    if objective_mode not in ("balanced", "accuracy"):
+        raise ValueError("OBJECTIVE_MODE must be 'balanced' or 'accuracy'")
+
+    default_balanced_sampler = "1" if objective_mode == "balanced" else "0"
+    default_use_pos_weight = "1" if objective_mode == "balanced" else "0"
+    default_val_metric = "auprc" if objective_mode == "balanced" else "acc"
+    default_thr_metric = "balanced_acc" if objective_mode == "balanced" else "acc"
+
+    # Balanced sampling helps the model learn minority class better.
+    use_balanced_sampler = os.environ.get("BALANCED_SAMPLER", default_balanced_sampler).strip().lower() not in (
         "0",
         "false",
         "no",
@@ -135,8 +146,9 @@ def main():
         num_skip_blocks=4,
     )
 
-    # Reliable training for imbalanced targets: pos_weight > 1 helps separation.
-    use_pos_weight = os.environ.get("USE_POS_WEIGHT", "1").strip().lower() not in (
+    # For imbalanced targets: pos_weight > 1 improves minority detection,
+    # but can reduce plain accuracy when that's the primary objective.
+    use_pos_weight = os.environ.get("USE_POS_WEIGHT", default_use_pos_weight).strip().lower() not in (
         "0",
         "false",
         "no",
@@ -175,11 +187,11 @@ def main():
         "no",
     )
     ema_decay = 0.999 if use_ema else None
-    val_metric = os.environ.get("VAL_METRIC", "auprc").strip().lower()
-    thr_metric = os.environ.get("THRESH_METRIC", "balanced_acc").strip().lower()
+    val_metric = os.environ.get("VAL_METRIC", default_val_metric).strip().lower()
+    thr_metric = os.environ.get("THRESH_METRIC", default_thr_metric).strip().lower()
     print(
         "Training Custom Architecture "
-        f"(checkpoint val_metric={val_metric}, thr_metric={thr_metric}, "
+        f"(mode={objective_mode}, checkpoint val_metric={val_metric}, thr_metric={thr_metric}, "
         f"OneCycleLR, EMA={'on' if use_ema else 'off'})..."
     )
     best_model, history = train_model_max_val_accuracy(

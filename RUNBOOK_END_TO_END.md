@@ -205,6 +205,17 @@ Optional env vars (same as local):
 !python experiments/run_custom_architecture.py
 ```
 
+Accuracy-focused mode (if your target metric is plain accuracy):
+
+```bash
+%env OBJECTIVE_MODE=accuracy
+%env BALANCED_SAMPLER=0
+%env USE_POS_WEIGHT=0
+%env VAL_METRIC=acc
+%env THRESH_METRIC=acc
+!python experiments/run_custom_architecture.py
+```
+
 ### 3.7 Export results from Kaggle back to your computer
 
 Kaggle persists anything written under the notebook working directory.

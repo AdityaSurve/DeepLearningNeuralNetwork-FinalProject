@@ -93,14 +93,29 @@ def main():
     # Objective profile:
     # - balanced: better minority recall/balanced accuracy (fairness-oriented)
     # - accuracy: better plain accuracy (majority-oriented)
-    objective_mode = os.environ.get("OBJECTIVE_MODE", "balanced").strip().lower()
-    if objective_mode not in ("balanced", "accuracy"):
-        raise ValueError("OBJECTIVE_MODE must be 'balanced' or 'accuracy'")
+    objective_mode = os.environ.get("OBJECTIVE_MODE", "hybrid").strip().lower()
+    if objective_mode not in ("balanced", "accuracy", "hybrid"):
+        raise ValueError(
+            "OBJECTIVE_MODE must be 'balanced', 'accuracy', or 'hybrid'"
+        )
 
-    default_balanced_sampler = "1" if objective_mode == "balanced" else "0"
-    default_use_pos_weight = "1" if objective_mode == "balanced" else "0"
-    default_val_metric = "auprc" if objective_mode == "balanced" else "acc"
-    default_thr_metric = "balanced_acc" if objective_mode == "balanced" else "acc"
+    # hybrid: high overall accuracy and strong per-class behavior via composite
+    # val/threshold objective (alpha * acc + (1-alpha) * balanced_accuracy).
+    if objective_mode == "balanced":
+        default_balanced_sampler = "1"
+        default_use_pos_weight = "1"
+        default_val_metric = "auprc"
+        default_thr_metric = "balanced_acc"
+    elif objective_mode == "accuracy":
+        default_balanced_sampler = "0"
+        default_use_pos_weight = "0"
+        default_val_metric = "acc"
+        default_thr_metric = "acc"
+    else:
+        default_balanced_sampler = "0"
+        default_use_pos_weight = "0"
+        default_val_metric = "composite"
+        default_thr_metric = "composite"
 
     # Balanced sampling helps the model learn minority class better.
     use_balanced_sampler = os.environ.get("BALANCED_SAMPLER", default_balanced_sampler).strip().lower() not in (
@@ -191,9 +206,11 @@ def main():
     ema_decay = 0.999 if use_ema else None
     val_metric = os.environ.get("VAL_METRIC", default_val_metric).strip().lower()
     thr_metric = os.environ.get("THRESH_METRIC", default_thr_metric).strip().lower()
+    composite_alpha = float(os.environ.get("COMPOSITE_ALPHA", "0.5"))
     print(
         "Training Custom Architecture "
         f"(mode={objective_mode}, checkpoint val_metric={val_metric}, thr_metric={thr_metric}, "
+        f"composite_alpha={composite_alpha}, "
         f"OneCycleLR, EMA={'on' if use_ema else 'off'})..."
     )
     best_model, history = train_model_max_val_accuracy(
@@ -211,10 +228,16 @@ def main():
         val_metric=val_metric,
         threshold_metric=thr_metric,
         ema_decay=ema_decay,
+        composite_alpha=composite_alpha,
     )
 
     y_val_true, y_val_prob = collect_probs(best_model, val_loader, device)
-    summary = compute_val_summary(y_val_true, y_val_prob, thr_metric=thr_metric)
+    summary = compute_val_summary(
+        y_val_true,
+        y_val_prob,
+        thr_metric=thr_metric,
+        composite_alpha=composite_alpha,
+    )
     thr = summary["best_thr"]
     print(
         f"Validation summary: AUROC={summary['auroc']:.4f}, AUPRC={summary['auprc']:.4f}, "
@@ -233,7 +256,12 @@ def main():
     )
     plot_learning_curves(history, output_dir)
     print(f"Test accuracy: {metrics['accuracy']:.4f}")
+    print(f"Test balanced accuracy: {metrics['balanced_accuracy']:.4f}")
     print(f"Test ROC_AUC: {metrics['roc_auc']:.4f}")
+    print(
+        f"Per-class recall (0/1): {metrics['recall_class_0']:.4f} / "
+        f"{metrics['recall_class_1']:.4f}"
+    )
 
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ from sklearn.metrics import (
     f1_score,
     accuracy_score,
     balanced_accuracy_score,
+    recall_score,
 )
 from src.metrics import evaluate_model
 import matplotlib.pyplot as plt
@@ -191,15 +192,20 @@ def find_best_threshold_accuracy(y_true: np.ndarray, y_prob: np.ndarray) -> Tupl
 
 
 def find_best_threshold_by_metric(
-    y_true: np.ndarray, y_prob: np.ndarray, metric: str
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    metric: str,
+    composite_alpha: float = 0.5,
 ) -> Tuple[float, float]:
     """
     Find threshold that maximizes a threshold-based metric on the given set.
-    Supported: acc, balanced_acc, f1
+    Supported: acc, balanced_acc, f1, f1_macro, gmean (per-class recall geometric mean),
+    composite (alpha * acc + (1-alpha) * balanced_acc).
     """
     metric = metric.strip().lower()
     y_true = np.asarray(y_true).astype(int).ravel()
     y_prob = np.asarray(y_prob, dtype=np.float64).ravel()
+    alpha = float(np.clip(composite_alpha, 0.0, 1.0))
     best_t = 0.5
     best_score = -1.0
     for t in np.linspace(0.005, 0.995, 199):
@@ -210,6 +216,16 @@ def find_best_threshold_by_metric(
             score = balanced_accuracy_score(y_true, pred)
         elif metric in ("f1", "f1_score"):
             score = f1_score(y_true, pred, zero_division=0)
+        elif metric in ("f1_macro", "macro_f1"):
+            score = f1_score(y_true, pred, average="macro", zero_division=0)
+        elif metric in ("gmean", "gmean_recall", "geom_mean_recall"):
+            r = recall_score(y_true, pred, average=None, zero_division=0)
+            r = np.asarray(r, dtype=np.float64)
+            score = float(np.sqrt(np.maximum(r.min() * r.max(), 0.0)))
+        elif metric in ("composite", "hybrid"):
+            score = alpha * accuracy_score(y_true, pred) + (
+                1.0 - alpha
+            ) * balanced_accuracy_score(y_true, pred)
         else:
             raise ValueError(f"Unsupported threshold metric: {metric}")
         if score > best_score:
@@ -219,7 +235,10 @@ def find_best_threshold_by_metric(
 
 
 def compute_val_summary(
-    y_true: np.ndarray, y_prob: np.ndarray, thr_metric: str = "balanced_acc"
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    thr_metric: str = "balanced_acc",
+    composite_alpha: float = 0.5,
 ) -> Dict[str, Any]:
     y_true = np.asarray(y_true).astype(int).ravel()
     y_prob = np.asarray(y_prob, dtype=np.float64).ravel()
@@ -231,14 +250,24 @@ def compute_val_summary(
     acc_05 = accuracy_score(y_true, pred_05)
     bacc_05 = balanced_accuracy_score(y_true, pred_05)
     f1_05 = f1_score(y_true, pred_05, zero_division=0)
+    f1_macro_05 = f1_score(y_true, pred_05, average="macro", zero_division=0)
+    r05 = recall_score(y_true, pred_05, average=None, zero_division=0)
+    r05 = np.asarray(r05, dtype=np.float64)
+    gmean_05 = float(np.sqrt(np.maximum(r05.min() * r05.max(), 0.0)))
 
     best_thr, best_thr_score = find_best_threshold_by_metric(
-        y_true, y_prob, thr_metric
+        y_true, y_prob, thr_metric, composite_alpha=composite_alpha
     )
     pred_best = (y_prob >= best_thr).astype(int)
     acc_best = accuracy_score(y_true, pred_best)
     bacc_best = balanced_accuracy_score(y_true, pred_best)
     f1_best = f1_score(y_true, pred_best, zero_division=0)
+    f1_macro_best = f1_score(y_true, pred_best, average="macro", zero_division=0)
+    rb = recall_score(y_true, pred_best, average=None, zero_division=0)
+    rb = np.asarray(rb, dtype=np.float64)
+    gmean_best = float(np.sqrt(np.maximum(rb.min() * rb.max(), 0.0)))
+    alpha = float(np.clip(composite_alpha, 0.0, 1.0))
+    composite_best = alpha * acc_best + (1.0 - alpha) * bacc_best
 
     return {
         "auroc": float(auroc),
@@ -246,12 +275,18 @@ def compute_val_summary(
         "acc_05": float(acc_05),
         "bacc_05": float(bacc_05),
         "f1_05": float(f1_05),
+        "f1_macro_05": float(f1_macro_05),
+        "gmean_recall_05": float(gmean_05),
         "best_thr_metric": thr_metric,
+        "composite_alpha": float(alpha),
         "best_thr": float(best_thr),
         "best_thr_score": float(best_thr_score),
         "acc_best": float(acc_best),
         "bacc_best": float(bacc_best),
         "f1_best": float(f1_best),
+        "f1_macro_best": float(f1_macro_best),
+        "gmean_recall_best": float(gmean_best),
+        "composite_at_best_thr": float(composite_best),
     }
 
 
@@ -309,6 +344,7 @@ def train_model_max_val_accuracy(
     val_metric: str = "auprc",
     threshold_metric: str = "balanced_acc",
     ema_decay: Optional[float] = None,
+    composite_alpha: float = 0.5,
 ):
     """
     Train while tracking validation accuracy; checkpoint best run.
@@ -330,6 +366,7 @@ def train_model_max_val_accuracy(
 
     val_metric = val_metric.strip().lower()
     threshold_metric = threshold_metric.strip().lower()
+    composite_alpha = float(np.clip(composite_alpha, 0.0, 1.0))
 
     best_val_score = -1.0
     counter = 0
@@ -404,7 +441,10 @@ def train_model_max_val_accuracy(
         y_true_val = np.array(y_true_val).ravel()
         y_prob_val = np.array(y_prob_val).ravel()
         summary = compute_val_summary(
-            y_true_val, y_prob_val, thr_metric=threshold_metric
+            y_true_val,
+            y_prob_val,
+            thr_metric=threshold_metric,
+            composite_alpha=composite_alpha,
         )
 
         if val_metric in ("auprc", "average_precision", "ap"):
@@ -422,6 +462,21 @@ def train_model_max_val_accuracy(
                 summary["f1_best"]
                 if checkpoint_on_val_acc_at_best_threshold
                 else summary["f1_05"]
+            )
+        elif val_metric in ("f1_macro", "macro_f1"):
+            _, val_score = find_best_threshold_by_metric(
+                y_true_val, y_prob_val, "f1_macro", composite_alpha=composite_alpha
+            )
+        elif val_metric in ("gmean", "gmean_recall", "geom_mean_recall"):
+            _, val_score = find_best_threshold_by_metric(
+                y_true_val, y_prob_val, "gmean", composite_alpha=composite_alpha
+            )
+        elif val_metric in ("composite", "hybrid"):
+            _, val_score = find_best_threshold_by_metric(
+                y_true_val,
+                y_prob_val,
+                "composite",
+                composite_alpha=composite_alpha,
             )
         elif val_metric in ("acc", "accuracy"):
             val_score = (

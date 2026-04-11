@@ -3,8 +3,19 @@ import json
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (
-    classification_report, confusion_matrix, roc_curve, auc, 
-    precision_recall_curve, average_precision_score, brier_score_loss, roc_auc_score, f1_score, recall_score, accuracy_score, balanced_accuracy_score
+    classification_report,
+    confusion_matrix,
+    roc_curve,
+    auc,
+    precision_recall_curve,
+    average_precision_score,
+    brier_score_loss,
+    roc_auc_score,
+    f1_score,
+    recall_score,
+    accuracy_score,
+    balanced_accuracy_score,
+    precision_recall_fscore_support,
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -51,15 +62,25 @@ def evaluate_model(y_true, y_prob, y_pred, output_dir, model_name):
     plt.savefig(os.path.join(output_dir, "pr_curve.png"))
     plt.close()
     
-    # 5. Core Metrics dict
+    # 5. Core Metrics dict (binary: per-class precision/recall/F1 for both labels)
+    prec_pc, rec_pc, f1_pc, _ = precision_recall_fscore_support(
+        y_true, y_pred, labels=[0, 1], zero_division=0
+    )
     metrics = {
-        'roc_auc': roc_auc,
-        'average_precision': ap,
-        'brier_score': brier_score_loss(y_true, y_prob),
-        'f1_score': f1_score(y_true, y_pred),
-        'recall': recall_score(y_true, y_pred),
-        'accuracy': accuracy_score(y_true, y_pred),
-        'balanced_accuracy': balanced_accuracy_score(y_true, y_pred)
+        "roc_auc": roc_auc,
+        "average_precision": ap,
+        "brier_score": brier_score_loss(y_true, y_prob),
+        "f1_score": f1_score(y_true, y_pred),
+        "f1_macro": f1_score(y_true, y_pred, average="macro", zero_division=0),
+        "recall": recall_score(y_true, y_pred),
+        "recall_class_0": float(rec_pc[0]),
+        "recall_class_1": float(rec_pc[1]),
+        "precision_class_0": float(prec_pc[0]),
+        "precision_class_1": float(prec_pc[1]),
+        "f1_class_0": float(f1_pc[0]),
+        "f1_class_1": float(f1_pc[1]),
+        "accuracy": accuracy_score(y_true, y_pred),
+        "balanced_accuracy": balanced_accuracy_score(y_true, y_pred),
     }
     with open(os.path.join(output_dir, "metrics.json"), "w") as f:
         json.dump(metrics, f, indent=4)

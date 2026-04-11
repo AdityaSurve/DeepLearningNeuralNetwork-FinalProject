@@ -4,17 +4,18 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset, WeightedRandomSampler
 
 from models.custom_architecture import CustomTabularNet
+from src.bias_mitigation import build_instance_weights
 from src.train_common import (
     get_device,
     train_model_max_val_accuracy,
     evaluate_pytorch_model,
     plot_learning_curves,
-    find_best_threshold_accuracy,
     compute_val_summary,
 )
 
@@ -77,10 +78,77 @@ def main():
         f"Train pos_rate={pos_rate:.4f} (baseline acc ~{baseline_acc:.4f} by predicting all-majority)",
         flush=True,
     )
-    train_dataset = TensorDataset(
-        torch.tensor(X_train, dtype=torch.float32),
-        torch.tensor(y_train, dtype=torch.float32),
-    )
+
+    # Kamiran–Calders-style reweighing (+ optional class balance) as weighted loss.
+    mitigation = os.environ.get("BIAS_MITIGATION", "both").strip().lower()
+    if mitigation not in ("none", "reweigh", "class", "both"):
+        raise ValueError(
+            "BIAS_MITIGATION must be one of: none, reweigh, class, both"
+        )
+    raw_train_path = "data/processed/X_train_raw.csv"
+    prot_cols = [
+        c.strip()
+        for c in os.environ.get("PROTECTED_ATTRS", "Sex,AgeCategory").split(",")
+        if c.strip()
+    ]
+    eff_mitigation = mitigation
+    prot_df = None
+    if eff_mitigation in ("reweigh", "both"):
+        if not os.path.isfile(raw_train_path):
+            if eff_mitigation == "reweigh":
+                raise FileNotFoundError(
+                    f"{raw_train_path} not found. Run src/preprocess.py to write "
+                    "raw train rows for demographic reweighing."
+                )
+            print(
+                "BIAS_MITIGATION=both but X_train_raw missing — using class-only "
+                "weights. Re-run preprocess to enable reweighing.",
+                flush=True,
+            )
+            eff_mitigation = "class"
+        else:
+            prot_full = pd.read_csv(raw_train_path)
+            avail = [c for c in prot_cols if c in prot_full.columns]
+            if not avail:
+                if eff_mitigation == "reweigh":
+                    raise ValueError(
+                        f"No protected columns {prot_cols} in {raw_train_path}"
+                    )
+                print(
+                    "BIAS_MITIGATION=both but no protected columns — class-only weights.",
+                    flush=True,
+                )
+                eff_mitigation = "class"
+            else:
+                prot_df = prot_full[avail]
+
+    train_weights = None
+    mit_desc = "none"
+    if eff_mitigation != "none":
+        w_np, mit_desc = build_instance_weights(
+            prot_df if eff_mitigation in ("reweigh", "both") else None,
+            y_train,
+            eff_mitigation,
+            protected_columns=list(prot_df.columns) if prot_df is not None else None,
+        )
+        train_weights = torch.tensor(w_np, dtype=torch.float32).unsqueeze(1)
+        print(
+            f"Bias mitigation: requested={mitigation} effective={eff_mitigation} "
+            f"({mit_desc}), mean_weight=1.0",
+            flush=True,
+        )
+
+    if train_weights is not None:
+        train_dataset = TensorDataset(
+            torch.tensor(X_train, dtype=torch.float32),
+            torch.tensor(y_train, dtype=torch.float32),
+            train_weights,
+        )
+    else:
+        train_dataset = TensorDataset(
+            torch.tensor(X_train, dtype=torch.float32),
+            torch.tensor(y_train, dtype=torch.float32),
+        )
     val_dataset = TensorDataset(
         torch.tensor(X_val, dtype=torch.float32),
         torch.tensor(y_val, dtype=torch.float32),
@@ -117,12 +185,19 @@ def main():
         default_val_metric = "composite"
         default_thr_metric = "composite"
 
-    # Balanced sampling helps the model learn minority class better.
+    # Balanced sampling vs instance weights: both up-weight rare (Y) cases; using
+    # both is usually redundant with BIAS_MITIGATION=class/both.
     use_balanced_sampler = os.environ.get("BALANCED_SAMPLER", default_balanced_sampler).strip().lower() not in (
         "0",
         "false",
         "no",
     )
+    if train_weights is not None and use_balanced_sampler:
+        print(
+            "Note: BALANCED_SAMPLER=1 with instance weights — consider BALANCED_SAMPLER=0 "
+            "unless you intentionally want extra minority oversampling.",
+            flush=True,
+        )
     if use_balanced_sampler:
         y_train_i = y_train.astype(int)
         class_count = np.bincount(y_train_i)
@@ -192,8 +267,10 @@ def main():
         final_div_factor=1e4,
     )
 
-    # Write separate artifacts per mode so you can report both.
+    # Write separate artifacts per mode (and mitigation profile).
     model_tag = f"custom_architecture_{objective_mode}"
+    if mitigation != "none":
+        model_tag += f"_mit_{eff_mitigation}"
     output_dir = f"outputs/{model_tag}"
     os.makedirs(f"checkpoints/{model_tag}", exist_ok=True)
     checkpoint_path = f"checkpoints/{model_tag}/best_model.pt"

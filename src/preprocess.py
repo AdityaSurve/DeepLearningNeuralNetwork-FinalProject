@@ -128,10 +128,11 @@ def preprocess_and_save():
                         X_val=X_val_ohe, y_val=y_val.values,
                         X_test=X_test_ohe, y_test=y_test.values)
 
-    # Note: For fairness, we need the protected attributes in the test set. 
-    # Since they are Ordinal Encoded, we can just use the mapped index for 'Sex' and 'AgeCategory'.
-    # We will save the original X_test for easy reference during interpretation/fairness.
-    X_test.to_csv('data/processed/X_test_raw.csv', index=False)
+    # Raw feature rows (same order as npz) for fairness / bias mitigation on train & val.
+    X_train.to_csv("data/processed/X_train_raw.csv", index=False)
+    X_val.to_csv("data/processed/X_val_raw.csv", index=False)
+    # Test set for fairness evaluation scripts.
+    X_test.to_csv("data/processed/X_test_raw.csv", index=False)
     y_test.to_csv('data/processed/y_test.csv', index=False)
 
     print("Preprocessing successful.")

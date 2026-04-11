@@ -7,6 +7,7 @@ from typing import Tuple, Optional, Dict, Any
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import (
     roc_auc_score,
@@ -24,6 +25,30 @@ def get_device():
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def _bce_pos_weight_tensor(criterion: nn.Module) -> Optional[torch.Tensor]:
+    if isinstance(criterion, nn.BCEWithLogitsLoss) and criterion.pos_weight is not None:
+        return criterion.pos_weight
+    return None
+
+
+def weighted_bce_with_logits_mean(
+    logits: torch.Tensor,
+    target: torch.Tensor,
+    sample_weight: torch.Tensor,
+    pos_weight: Optional[torch.Tensor] = None,
+) -> torch.Tensor:
+    """Mean BCE with logits over the batch, weighted by non-negative sample_weight."""
+    t = target.float().view_as(logits)
+    pw = pos_weight
+    if pw is not None:
+        pw = pw.to(logits.device, dtype=logits.dtype)
+    per = F.binary_cross_entropy_with_logits(
+        logits, t, reduction="none", pos_weight=pw
+    )
+    w = sample_weight.float().reshape_as(per)
+    return (per * w).sum() / w.sum().clamp_min(1e-8)
 
 class EarlyStopping:
     def __init__(self, patience=5, min_delta=0, path='checkpoint.pth'):
@@ -388,33 +413,55 @@ def train_model_max_val_accuracy(
 
     for epoch in range(epochs):
         model.train()
-        train_loss = 0.0
-        for X_batch, y_batch in train_loader:
-            if isinstance(X_batch, (list, tuple)):
-                X_batch = [x.to(device) for x in X_batch]
-            else:
+        train_loss_num = 0.0
+        train_loss_den = 0.0
+        for batch in train_loader:
+            if isinstance(batch, (list, tuple)) and len(batch) == 3:
+                X_batch, y_batch, w_batch = batch
                 X_batch = X_batch.to(device)
-            y_batch = y_batch.to(device).unsqueeze(1)
-
-            optimizer.zero_grad()
-            if isinstance(X_batch, list):
-                y_pred = model(X_batch[0], X_batch[1])
-            else:
+                y_batch = y_batch.to(device).unsqueeze(1)
+                w_batch = w_batch.to(device)
+                optimizer.zero_grad()
                 y_pred = model(X_batch)
-            loss = criterion(y_pred, y_batch)
-            loss.backward()
+                pw = _bce_pos_weight_tensor(criterion)
+                loss = weighted_bce_with_logits_mean(
+                    y_pred, y_batch, w_batch, pw
+                )
+                loss.backward()
+                wd = float(w_batch.sum().item())
+                train_loss_num += loss.item() * wd
+                train_loss_den += wd
+            else:
+                X_batch, y_batch = batch[0], batch[1]
+                if isinstance(X_batch, (list, tuple)):
+                    X_batch = [x.to(device) for x in X_batch]
+                else:
+                    X_batch = X_batch.to(device)
+                y_batch = y_batch.to(device).unsqueeze(1)
+
+                optimizer.zero_grad()
+                if isinstance(X_batch, list):
+                    y_pred = model(X_batch[0], X_batch[1])
+                else:
+                    y_pred = model(X_batch)
+                loss = criterion(y_pred, y_batch)
+                loss.backward()
+                train_loss_num += loss.item() * y_batch.size(0)
+                train_loss_den += float(y_batch.size(0))
+
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             if scheduler is not None:
                 scheduler.step()
-            train_loss += loss.item() * y_batch.size(0)
 
             if ema_model is not None:
                 with torch.no_grad():
                     for p, p_ema in zip(model.parameters(), ema_model.parameters()):
                         p_ema.mul_(ema_decay).add_(p, alpha=1.0 - ema_decay)
 
-        train_loss /= len(train_loader.dataset)
+        train_loss = (
+            train_loss_num / train_loss_den if train_loss_den > 0 else 0.0
+        )
 
         eval_net = ema_model if ema_model is not None else model
         eval_net.eval()

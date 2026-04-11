@@ -41,6 +41,10 @@ def main():
         'xgboost',
         'lightgbm',
         'mlp',
+        'custom_architecture_hybrid',
+        'custom_architecture_hybrid_mit_both',
+        'custom_architecture_hybrid_mit_class',
+        'custom_architecture_hybrid_mit_reweigh',
         'custom_architecture_balanced',
         'custom_architecture_accuracy',
     ]

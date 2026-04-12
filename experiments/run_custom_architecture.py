@@ -13,6 +13,7 @@ from models.custom_architecture import CustomTabularNet
 from src.bias_mitigation import build_instance_weights
 from src.train_common import (
     get_device,
+    count_parameters,
     train_model_max_val_accuracy,
     evaluate_pytorch_model,
     plot_learning_curves,
@@ -225,15 +226,19 @@ def main():
     )
 
     input_dim = int(X_train.shape[1])
+    hidden_dim = int(os.environ.get("CUSTOM_HIDDEN", "256"))
+    num_blocks = int(os.environ.get("CUSTOM_BLOCKS", "2"))
+    dropout = float(os.environ.get("CUSTOM_DROPOUT", "0.2"))
     model = CustomTabularNet(
         input_dim=input_dim,
-        n_tokens=10,
-        d_model=320,
-        n_heads=8,
-        n_layers=5,
-        dim_ff=1280,
-        dropout=0.1,
-        num_skip_blocks=4,
+        hidden_dim=hidden_dim,
+        num_blocks=num_blocks,
+        dropout=dropout,
+    )
+    print(
+        f"CustomTabularNet: hidden_dim={hidden_dim}, num_blocks={num_blocks}, "
+        f"dropout={dropout}, parameters={count_parameters(model):,}",
+        flush=True,
     )
 
     # For imbalanced targets: pos_weight > 1 improves minority detection,

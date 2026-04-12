@@ -1,7 +1,9 @@
-import os
 import json
+import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from pathlib import Path
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
@@ -24,27 +26,50 @@ def main():
     mlp.to(device)
     evaluate_pytorch_model(mlp, test_loader, 'outputs/mlp', 'MLP', device=device)
 
-    # Evaluate Custom (match architecture in run_custom_architecture.py)
+    # Evaluate Custom (same hyperparameters as run_custom_architecture.py defaults)
+    h = int(os.environ.get("CUSTOM_HIDDEN", "256"))
+    nb = int(os.environ.get("CUSTOM_BLOCKS", "2"))
+    do = float(os.environ.get("CUSTOM_DROPOUT", "0.2"))
     custom = CustomTabularNet(
-        input_dim=input_dim,
-        n_tokens=10,
-        d_model=320,
-        n_heads=8,
-        n_layers=5,
-        dim_ff=1280,
-        dropout=0.1,
-        num_skip_blocks=4,
+        input_dim=input_dim, hidden_dim=h, num_blocks=nb, dropout=do
     )
-    custom.load_state_dict(torch.load('checkpoints/custom_architecture/best_model.pt', map_location=device))
-    custom.to(device)
-    thr = 0.5
-    metrics_path = 'outputs/custom_architecture/metrics.json'
-    if os.path.exists(metrics_path):
-        with open(metrics_path, encoding='utf-8') as f:
-            thr = float(json.load(f).get('threshold', 0.5))
-    evaluate_pytorch_model(
-        custom, test_loader, 'outputs/custom_architecture', 'CustomArchitecture', device=device, threshold=thr
-    )
+    ckpt = os.environ.get("CUSTOM_CHECKPOINT", "")
+    candidates = [
+        p
+        for p in (
+            ckpt,
+            "checkpoints/custom_architecture_hybrid/best_model.pt",
+            "checkpoints/custom_architecture_hybrid_mit_both/best_model.pt",
+            "checkpoints/custom_architecture_hybrid_mit_class/best_model.pt",
+            "checkpoints/custom_architecture/best_model.pt",
+        )
+        if p
+    ]
+    ckpt_path = next((p for p in candidates if os.path.isfile(p)), None)
+    if ckpt_path is None:
+        print("Skipping custom eval: no checkpoint found; set CUSTOM_CHECKPOINT.")
+    else:
+        try:
+            state = torch.load(ckpt_path, map_location=device, weights_only=True)
+        except TypeError:
+            state = torch.load(ckpt_path, map_location=device)
+        custom.load_state_dict(state)
+        custom.to(device)
+        tag = Path(ckpt_path).parent.name
+        out_dir = f"outputs/{tag}"
+        thr = 0.5
+        metrics_path = os.path.join(out_dir, "metrics.json")
+        if os.path.exists(metrics_path):
+            with open(metrics_path, encoding="utf-8") as f:
+                thr = float(json.load(f).get("threshold", 0.5))
+        evaluate_pytorch_model(
+            custom,
+            test_loader,
+            out_dir,
+            "CustomArchitecture",
+            device=device,
+            threshold=thr,
+        )
     
 if __name__ == '__main__':
     main()

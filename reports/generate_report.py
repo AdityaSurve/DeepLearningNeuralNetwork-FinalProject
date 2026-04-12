@@ -20,32 +20,30 @@ def generate_report():
     else:
         fair_md = "Fairness analysis not found."
         
-    md_content = f"""# Final Project Report: Fair and Reliable Deep Learning for Heart Disease Prediction
+    md_content = f"""# Final project report: Adult Census Income (>50K prediction)
 
-## 1. Project Objective
-Built specialized tabular deep learning models vs robust machine learning baselines to predict Heart Disease accurately, rigorously evaluating along metrics of generalizability and demographic fairness.
+## 1. Project objective
+Tabular deep learning vs classical baselines on **Adult Census Income** (OpenML): predict **income >50K**, with overall metrics and fairness-style breakdowns by **sex** and **race**.
 
-## 2. Dataset Overview
-Used the `heart_2020_cleaned.csv` containing demographics, physical health factors, and boolean traits. Features were parsed and split into categorical and numerical streams. 
+## 2. Dataset
+Data are loaded via `sklearn.datasets.fetch_openml` in `src/preprocess.py` (no bundled CSV). Numeric and categorical columns are imputed, scaled (numeric), and encoded (one-hot / ordinal) before modeling.
 
-## 3. Results & Master Leaderboard
+## 3. Results & leaderboard
 {lb_md}
 
-## 4. Deep Learning vs Classical Baselines
-The models were trained with weighted objective functions corresponding to the extreme class imbalance natively observed. Custom PyTorch architectures, including robust combinations of residual MLPs and GatedFeatureFusion blocks, were designed.
+## 4. Deep learning vs baselines
+The custom model is a compact **residual MLP** (`models/custom_architecture.py`), trained with validation-driven thresholding and optional instance reweighing (`experiments/run_custom_architecture.py`). Tree baselines use `data/processed/data_ord.npz`.
 
-**Comparison:**
-Our Custom Architecture was designed explicitly to outperform the core machine learning baselines (XGBoost, Random Forest, Logistic Regression). 
-Check `outputs/comparisons/custom_vs_baseline.png` for a direct validation on whether the deep neural tabular stream successfully achieved higher AUC parameterizations over standard ML.
+**Comparison:** see `outputs/comparisons/custom_vs_baseline.png` when present.
 
 ![Best Baseline vs Custom Architecture](/outputs/comparisons/custom_vs_baseline.png)
 
-## 5. Fairness Analysis 
-A key goal of this pipeline was robust assessment of test recall and sensitivity per demographic bounds:
+## 5. Fairness analysis
+Metrics by **sex** and **race** on the held-out test split:
 {fair_md}
 
 ## 6. Conclusion
-The implementation confirms the end to end execution from setup to hyper tuning to artifact generation across both XGBoost, PyTorch, and scikit-learn suites without pipeline leakage.
+End-to-end pipeline: fetch Adult → preprocess → train baselines and custom PyTorch model → compare → subgroup metrics.
 """
     with open(report_path, 'w') as f:
         f.write(md_content)

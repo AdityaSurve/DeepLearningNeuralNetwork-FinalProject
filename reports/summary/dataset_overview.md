@@ -1,9 +1,10 @@
-# Dataset Overview
+# Dataset overview
 
-- **Shape**: 319795 rows, 18 columns
-- **Target Column (inferred)**: HeartDisease
-- **Sex/Gender Columns (inferred)**: ['Sex']
-- **Age Columns (inferred)**: ['AgeCategory']
+- **Source**: UCI / OpenML Adult Census Income (version 2)
+- **Shape**: 48842 rows, 15 columns
+- **Target**: `class` (1 => income >50K)
+- **Sex column**: ['sex']
+- **Race column**: ['race']
 
 ## Observations
-- Dataset loaded successfully. See `reports/tables/column_summary.csv` for details.
+- See `reports/tables/column_summary.csv` for dtypes and missingness.

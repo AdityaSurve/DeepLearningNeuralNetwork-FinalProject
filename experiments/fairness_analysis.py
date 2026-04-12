@@ -52,9 +52,8 @@ def main():
     # Load test labels and raw features
     df_raw = pd.read_csv('data/processed/X_test_raw.csv')
     
-    # We inferred Sex and AgeCategory in discovery
-    protected_attrs = ['Sex', 'AgeCategory']
-    available_attrs = [attr for attr in protected_attrs if attr in df_raw.columns]
+    protected_attrs = ["sex", "race"]
+    available_attrs = [a for a in protected_attrs if a in df_raw.columns]
     
     if not available_attrs:
         print("No protected attributes found for fairness analysis.")

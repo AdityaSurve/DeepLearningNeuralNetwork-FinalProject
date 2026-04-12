@@ -89,7 +89,7 @@ def main():
     raw_train_path = "data/processed/X_train_raw.csv"
     prot_cols = [
         c.strip()
-        for c in os.environ.get("PROTECTED_ATTRS", "Sex,AgeCategory").split(",")
+        for c in os.environ.get("PROTECTED_ATTRS", "sex,race").split(",")
         if c.strip()
     ]
     eff_mitigation = mitigation

@@ -160,16 +160,17 @@ def main():
     )
 
     # Objective profile:
-    # - balanced: better minority recall/balanced accuracy (fairness-oriented)
-    # - accuracy: better plain accuracy (majority-oriented)
+    # - balanced: AUPRC checkpoint + balanced_acc threshold
+    # - accuracy: acc checkpoint + acc threshold
+    # - hybrid (default): balanced_acc for BOTH val checkpoint and threshold sweep
+    #   (maximizes mean of class recalls on val — strong for minority class).
+    #   Override with VAL_METRIC / THRESH_METRIC (e.g. composite + COMPOSITE_ALPHA).
     objective_mode = os.environ.get("OBJECTIVE_MODE", "hybrid").strip().lower()
     if objective_mode not in ("balanced", "accuracy", "hybrid"):
         raise ValueError(
             "OBJECTIVE_MODE must be 'balanced', 'accuracy', or 'hybrid'"
         )
 
-    # hybrid: high overall accuracy and strong per-class behavior via composite
-    # val/threshold objective (alpha * acc + (1-alpha) * balanced_accuracy).
     if objective_mode == "balanced":
         default_balanced_sampler = "1"
         default_use_pos_weight = "1"
@@ -183,8 +184,8 @@ def main():
     else:
         default_balanced_sampler = "0"
         default_use_pos_weight = "0"
-        default_val_metric = "composite"
-        default_thr_metric = "composite"
+        default_val_metric = "balanced_acc"
+        default_thr_metric = "balanced_acc"
 
     # Balanced sampling vs instance weights: both up-weight rare (Y) cases; using
     # both is usually redundant with BIAS_MITIGATION=class/both.
@@ -289,11 +290,18 @@ def main():
     val_metric = os.environ.get("VAL_METRIC", default_val_metric).strip().lower()
     thr_metric = os.environ.get("THRESH_METRIC", default_thr_metric).strip().lower()
     composite_alpha = float(os.environ.get("COMPOSITE_ALPHA", "0.5"))
+    extra = (
+        f", composite_alpha={composite_alpha}"
+        if val_metric in ("composite", "hybrid")
+        or thr_metric in ("composite", "hybrid")
+        else ""
+    )
     print(
         "Training Custom Architecture "
-        f"(mode={objective_mode}, checkpoint val_metric={val_metric}, thr_metric={thr_metric}, "
-        f"composite_alpha={composite_alpha}, "
-        f"OneCycleLR, EMA={'on' if use_ema else 'off'})..."
+        f"(mode={objective_mode}, checkpoint val_metric={val_metric}, thr_metric={thr_metric}"
+        f"{extra}, "
+        f"OneCycleLR, EMA={'on' if use_ema else 'off'})...",
+        flush=True,
     )
     best_model, history = train_model_max_val_accuracy(
         model,

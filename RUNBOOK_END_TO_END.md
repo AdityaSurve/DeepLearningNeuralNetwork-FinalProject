@@ -10,10 +10,10 @@ Single data source: **Adult Census Income** from OpenML (via `sklearn.datasets.f
 ## 1) Install dependencies
 
 ```powershell
-pip install numpy pandas scikit-learn torch matplotlib seaborn joblib xgboost lightgbm
+pip install -r requirements.txt
 ```
 
-(Use your course’s exact list if different; `requirements.txt` matches the repo.)
+(Includes **catboost**; use your course’s exact list if different.)
 
 ---
 
@@ -33,15 +33,30 @@ Run **in order** from the project root:
 python setup_dirs.py
 python experiments/data_discovery.py
 python src/preprocess.py
+
+# Classical baselines (ordinal unless noted)
 python baselines/train_logistic_regression.py
+python baselines/train_logistic_elasticnet.py
+python baselines/train_random_forest.py
 python baselines/train_xgboost.py
 python baselines/train_lightgbm.py
+python baselines/train_catboost.py
+python baselines/train_hist_gradient_boosting.py
+
+# Neural (one-hot)
 python experiments/run_mlp.py
+python experiments/run_tabular_transformer.py
 python experiments/run_custom_architecture.py
+
+# Optional: multi-model ensemble (requires trained artifacts)
+python experiments/ensemble.py
+
 python experiments/fairness_analysis.py
 python experiments/compare_all_models.py
 python reports/generate_report.py
 ```
+
+`compare_all_models.py` scans **all** `outputs/<name>/metrics.json` paths it knows about (including every `custom_architecture_*` tag from `run_custom_architecture.py` and `ensemble_full` if you used that folder).
 
 Or use the bundled runner (same steps except RF and `generate_report`):
 
@@ -61,13 +76,23 @@ python reports/generate_report.py
 
 Set **before** `python experiments/run_custom_architecture.py` (PowerShell example):
 
+Default **`hybrid`** uses **`balanced_acc`** for both the validation checkpoint and the probability threshold (tuned on val), which favors **both classes** and usually helps **minority-class recall**.
+
 ```powershell
 $env:OBJECTIVE_MODE="hybrid"
 $env:BIAS_MITIGATION="both"
-$env:COMPOSITE_ALPHA="0.5"
 $env:PROTECTED_ATTRS="sex,race"
 $env:CUSTOM_HIDDEN="256"
 $env:CUSTOM_BLOCKS="2"
+python experiments/run_custom_architecture.py
+```
+
+To go back to the **accuracy vs balanced-accuracy blend** on validation instead:
+
+```powershell
+$env:VAL_METRIC="composite"
+$env:THRESH_METRIC="composite"
+$env:COMPOSITE_ALPHA="0.5"
 python experiments/run_custom_architecture.py
 ```
 

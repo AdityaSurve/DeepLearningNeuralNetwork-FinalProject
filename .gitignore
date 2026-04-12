@@ -1,0 +1,37 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Training / evaluation artifacts (regenerate with pipeline)
+outputs/
+checkpoints/
+
+# Processed data and fitted preprocessors (regenerate with src/preprocess.py)
+data/processed/
+data/metadata/*.joblib
+data/metadata/active_dataset.txt
+
+# Profiling / scratch
+git_cmd_log.txt
+git_status_out.txt
+*.log
+
+# Auto-generated profiling (rerun experiments/data_discovery.py)
+reports/tables/*.csv
+reports/summary/dataset_overview.md
+reports/figures/**/*.png

@@ -1,171 +1,83 @@
 {
-    "Sex": {
+    "sex": {
         "Female": {
-            "Accuracy": 0.776880153243941,
-            "F1": 0.3052385892116183,
-            "Recall": 0.715501519756839,
-            "Precision": 0.19400032965221692,
-            "ROC_AUC": 0.8301163233257707,
-            "Count": 24014,
+            "Accuracy": 0.9150082918739635,
+            "F1": 0.6483704974271012,
+            "Recall": 0.73828125,
+            "Precision": 0.5779816513761468,
+            "ROC_AUC": 0.9377608998144713,
+            "Count": 2412,
             "Model": "xgboost",
-            "Attribute": "Sex",
+            "Attribute": "sex",
             "Group": "Female"
         },
         "Male": {
-            "Accuracy": 0.6756260591225758,
-            "F1": 0.37745053753726626,
-            "Recall": 0.8547463175122749,
-            "Precision": 0.24220289855072463,
-            "ROC_AUC": 0.8329740767663754,
-            "Count": 21244,
+            "Accuracy": 0.7876502954962299,
+            "F1": 0.7207931404072884,
+            "Recall": 0.8990641711229946,
+            "Precision": 0.601520572450805,
+            "ROC_AUC": 0.9106450387782842,
+            "Count": 4907,
             "Model": "xgboost",
-            "Attribute": "Sex",
+            "Attribute": "sex",
             "Group": "Male"
         }
     },
-    "AgeCategory": {
-        "18-24": {
-            "Accuracy": 0.9931124959002952,
-            "F1": 0.08695652173913043,
-            "Recall": 0.05555555555555555,
-            "Precision": 0.2,
-            "ROC_AUC": 0.6814949228344147,
-            "Count": 3049,
+    "race": {
+        "Amer-Indian-Eskimo": {
+            "Accuracy": 0.8923076923076924,
+            "F1": 0.5882352941176471,
+            "Recall": 0.5555555555555556,
+            "Precision": 0.625,
+            "ROC_AUC": 0.8869047619047619,
+            "Count": 65,
             "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "18-24"
+            "Attribute": "race",
+            "Group": "Amer-Indian-Eskimo"
         },
-        "25-29": {
-            "Accuracy": 0.9879324215607401,
-            "F1": 0.11764705882352941,
-            "Recall": 0.08,
-            "Precision": 0.2222222222222222,
-            "ROC_AUC": 0.5801706623323852,
-            "Count": 2486,
+        "Asian-Pac-Islander": {
+            "Accuracy": 0.7874396135265701,
+            "F1": 0.725,
+            "Recall": 0.8169014084507042,
+            "Precision": 0.651685393258427,
+            "ROC_AUC": 0.8734465617232808,
+            "Count": 207,
             "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "25-29"
+            "Attribute": "race",
+            "Group": "Asian-Pac-Islander"
         },
-        "30-34": {
-            "Accuracy": 0.9808845577211395,
-            "F1": 0.16393442622950818,
-            "Recall": 0.1282051282051282,
-            "Precision": 0.22727272727272727,
-            "ROC_AUC": 0.7355287669095201,
-            "Count": 2668,
+        "Black": {
+            "Accuracy": 0.9115853658536586,
+            "F1": 0.7010309278350515,
+            "Recall": 0.8717948717948718,
+            "Precision": 0.5862068965517241,
+            "ROC_AUC": 0.9611613876319758,
+            "Count": 656,
             "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "30-34"
+            "Attribute": "race",
+            "Group": "Black"
         },
-        "35-39": {
-            "Accuracy": 0.9764379764379765,
-            "F1": 0.19047619047619047,
-            "Recall": 0.16326530612244897,
-            "Precision": 0.22857142857142856,
-            "ROC_AUC": 0.7455597677915016,
-            "Count": 2886,
+        "Other": {
+            "Accuracy": 0.8958333333333334,
+            "F1": 0.7058823529411765,
+            "Recall": 0.8571428571428571,
+            "Precision": 0.6,
+            "ROC_AUC": 0.9721254355400697,
+            "Count": 48,
             "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "35-39"
+            "Attribute": "race",
+            "Group": "Other"
         },
-        "40-44": {
-            "Accuracy": 0.9489655172413793,
-            "F1": 0.23711340206185566,
-            "Recall": 0.2839506172839506,
-            "Precision": 0.20353982300884957,
-            "ROC_AUC": 0.7960422880016116,
-            "Count": 2900,
+        "White": {
+            "Accuracy": 0.8213778968942141,
+            "F1": 0.711484593837535,
+            "Recall": 0.8802772526780088,
+            "Precision": 0.597008547008547,
+            "ROC_AUC": 0.9246081492657701,
+            "Count": 6343,
             "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "40-44"
-        },
-        "45-49": {
-            "Accuracy": 0.9229524117837488,
-            "F1": 0.3,
-            "Recall": 0.45132743362831856,
-            "Precision": 0.22466960352422907,
-            "ROC_AUC": 0.8415167951279855,
-            "Count": 3089,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "45-49"
-        },
-        "50-54": {
-            "Accuracy": 0.8524818739542666,
-            "F1": 0.2763337893296854,
-            "Recall": 0.49029126213592233,
-            "Precision": 0.19238095238095237,
-            "ROC_AUC": 0.7801085770092492,
-            "Count": 3586,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "50-54"
-        },
-        "55-59": {
-            "Accuracy": 0.7407230069427819,
-            "F1": 0.26576271186440675,
-            "Recall": 0.6621621621621622,
-            "Precision": 0.1662425784563189,
-            "ROC_AUC": 0.7814573946530917,
-            "Count": 4177,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "55-59"
-        },
-        "60-64": {
-            "Accuracy": 0.6417339566510837,
-            "F1": 0.3084495488105004,
-            "Recall": 0.7626774847870182,
-            "Precision": 0.19331619537275063,
-            "ROC_AUC": 0.7713411448867096,
-            "Count": 4706,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "60-64"
-        },
-        "65-69": {
-            "Accuracy": 0.5600587988240235,
-            "F1": 0.32831035588329593,
-            "Recall": 0.8284789644012945,
-            "Precision": 0.20471811275489804,
-            "ROC_AUC": 0.7536376529094976,
-            "Count": 4762,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "65-69"
-        },
-        "70-74": {
-            "Accuracy": 0.4835603569751057,
-            "F1": 0.36019784695955775,
-            "Recall": 0.8855507868383404,
-            "Precision": 0.22607742878013148,
-            "ROC_AUC": 0.744119464204674,
-            "Count": 4258,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "70-74"
-        },
-        "75-79": {
-            "Accuracy": 0.42753164556962026,
-            "F1": 0.388644812436634,
-            "Recall": 0.9274193548387096,
-            "Precision": 0.24583155194527576,
-            "ROC_AUC": 0.7394885064770129,
-            "Count": 3160,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "75-79"
-        },
-        "80 or older": {
-            "Accuracy": 0.35089209855564996,
-            "F1": 0.41019042717447246,
-            "Recall": 0.9579326923076923,
-            "Precision": 0.26096922069417156,
-            "ROC_AUC": 0.7103512340752984,
-            "Count": 3531,
-            "Model": "xgboost",
-            "Attribute": "AgeCategory",
-            "Group": "80 or older"
+            "Attribute": "race",
+            "Group": "White"
         }
     }
 }

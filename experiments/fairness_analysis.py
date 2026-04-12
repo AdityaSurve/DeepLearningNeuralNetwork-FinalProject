@@ -37,16 +37,28 @@ def evaluate_fairness(y_true, y_pred, y_prob, group, group_name):
 def main():
     models = [
         'logistic_regression',
+        'logistic_elasticnet',
         'random_forest',
         'xgboost',
         'lightgbm',
+        'catboost',
+        'hist_gradient_boosting',
         'mlp',
+        'tabular_transformer',
         'custom_architecture_hybrid',
         'custom_architecture_hybrid_mit_both',
         'custom_architecture_hybrid_mit_class',
         'custom_architecture_hybrid_mit_reweigh',
         'custom_architecture_balanced',
         'custom_architecture_accuracy',
+        'custom_architecture_balanced_mit_both',
+        'custom_architecture_balanced_mit_class',
+        'custom_architecture_balanced_mit_reweigh',
+        'custom_architecture_accuracy_mit_both',
+        'custom_architecture_accuracy_mit_class',
+        'custom_architecture_accuracy_mit_reweigh',
+        'ensemble',
+        'ensemble_full',
     ]
     
     # Load test labels and raw features

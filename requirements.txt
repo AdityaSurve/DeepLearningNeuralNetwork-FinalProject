@@ -5,6 +5,7 @@ torch
 torchvision
 xgboost
 lightgbm
+catboost
 seaborn
 matplotlib
 shap

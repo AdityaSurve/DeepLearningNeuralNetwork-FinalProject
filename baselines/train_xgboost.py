@@ -32,14 +32,14 @@ def main():
     eval_set = [(X_train, y_train), (X_val, y_val)]
     
     clf = xgb.XGBClassifier(
-        n_estimators=1000,
+        n_estimators=300,
         learning_rate=0.05,
-        max_depth=6,
+        max_depth=4,
         subsample=0.8,
         colsample_bytree=0.8,
         scale_pos_weight=scale_pos_weight,
         eval_metric='auc',
-        early_stopping_rounds=50,
+        early_stopping_rounds=20,
         tree_method='hist', # Enable fast histogram tree method
         random_state=42,
         n_jobs=-1

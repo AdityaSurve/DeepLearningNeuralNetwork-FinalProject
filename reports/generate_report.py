@@ -13,20 +13,24 @@ def generate_report():
         lb_md = "Leaderboard not found."
         
     fair_path = 'outputs/fairness/fairness_comparison_table.csv'
+    attr_summary = "sex"
     if os.path.exists(fair_path):
         fair = pd.read_csv(fair_path)
+        if "Attribute" in fair.columns and not fair.empty:
+            attrs = sorted(set(fair["Attribute"].astype(str)))
+            attr_summary = ", ".join(attrs)
         # Simplify table for display
         fair_md = fair.groupby(['Attribute', 'Model']).mean(numeric_only=True).reset_index().to_markdown(index=False)
     else:
         fair_md = "Fairness analysis not found."
         
-    md_content = f"""# Final project report: Adult Census Income (>50K prediction)
+    md_content = f"""# Final project report: Heart Disease Detection (binary classification)
 
 ## 1. Project objective
-Tabular deep learning vs classical baselines on **Adult Census Income** (OpenML): predict **income >50K**, with overall metrics and fairness-style breakdowns by **sex** and **race**.
+Tabular deep learning vs classical baselines on **Heart Disease** (OpenML): predict **disease presence (target=1)**, with overall metrics and subgroup-style breakdowns by protected/clinical attributes.
 
 ## 2. Dataset
-Data are loaded via `sklearn.datasets.fetch_openml` in `src/preprocess.py` (no bundled CSV). Numeric and categorical columns are imputed, scaled (numeric), and encoded (one-hot / ordinal) before modeling.
+Data are loaded via `sklearn.datasets.fetch_openml("heart-disease", version=1)` in `src/preprocess.py` (no bundled CSV). Numeric and categorical columns are imputed, scaled (numeric), and encoded (one-hot / ordinal) before modeling.
 
 ## 3. Results & leaderboard
 {lb_md}
@@ -41,11 +45,11 @@ The custom model is a compact **residual MLP** (`models/custom_architecture.py`)
 ![Best classical vs deep vs ensemble](/outputs/comparisons/custom_vs_baseline.png)
 
 ## 5. Fairness analysis
-Metrics by **sex** and **race** on the held-out test split:
+Metrics by **{attr_summary}** on the held-out test split:
 {fair_md}
 
 ## 6. Conclusion
-End-to-end pipeline: fetch Adult → preprocess → train baselines and custom PyTorch model → optional tree+DL ensemble → compare → subgroup metrics.
+End-to-end pipeline: fetch heart-disease data → preprocess → train baselines and custom PyTorch model → optional tree+DL ensemble → compare → subgroup metrics.
 """
     with open(report_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(md_content)

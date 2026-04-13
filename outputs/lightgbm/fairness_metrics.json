@@ -1,83 +1,26 @@
 {
     "sex": {
-        "Female": {
-            "Accuracy": 0.9133499170812603,
-            "F1": 0.6475548060708263,
-            "Recall": 0.75,
-            "Precision": 0.56973293768546,
-            "ROC_AUC": 0.9396016929499071,
-            "Count": 2412,
+        "0": {
+            "Accuracy": 0.9375,
+            "F1": 0.9629629629629629,
+            "Recall": 1.0,
+            "Precision": 0.9285714285714286,
+            "ROC_AUC": 0.9487179487179488,
+            "Count": 16,
             "Model": "lightgbm",
             "Attribute": "sex",
-            "Group": "Female"
+            "Group": "0"
         },
-        "Male": {
-            "Accuracy": 0.7827593234155288,
-            "F1": 0.7181385510312004,
-            "Recall": 0.9077540106951871,
-            "Precision": 0.5940507436570429,
-            "ROC_AUC": 0.9100025554317034,
-            "Count": 4907,
+        "1": {
+            "Accuracy": 0.7666666666666667,
+            "F1": 0.7741935483870968,
+            "Recall": 1.0,
+            "Precision": 0.631578947368421,
+            "ROC_AUC": 0.8657407407407408,
+            "Count": 30,
             "Model": "lightgbm",
             "Attribute": "sex",
-            "Group": "Male"
-        }
-    },
-    "race": {
-        "Amer-Indian-Eskimo": {
-            "Accuracy": 0.8615384615384616,
-            "F1": 0.5263157894736842,
-            "Recall": 0.5555555555555556,
-            "Precision": 0.5,
-            "ROC_AUC": 0.876984126984127,
-            "Count": 65,
-            "Model": "lightgbm",
-            "Attribute": "race",
-            "Group": "Amer-Indian-Eskimo"
-        },
-        "Asian-Pac-Islander": {
-            "Accuracy": 0.7874396135265701,
-            "F1": 0.7317073170731707,
-            "Recall": 0.8450704225352113,
-            "Precision": 0.6451612903225806,
-            "ROC_AUC": 0.8733429991714995,
-            "Count": 207,
-            "Model": "lightgbm",
-            "Attribute": "race",
-            "Group": "Asian-Pac-Islander"
-        },
-        "Black": {
-            "Accuracy": 0.9115853658536586,
-            "F1": 0.7040816326530612,
-            "Recall": 0.8846153846153846,
-            "Precision": 0.5847457627118644,
-            "ROC_AUC": 0.9605181439091474,
-            "Count": 656,
-            "Model": "lightgbm",
-            "Attribute": "race",
-            "Group": "Black"
-        },
-        "Other": {
-            "Accuracy": 0.875,
-            "F1": 0.6666666666666666,
-            "Recall": 0.8571428571428571,
-            "Precision": 0.5454545454545454,
-            "ROC_AUC": 0.9686411149825784,
-            "Count": 48,
-            "Model": "lightgbm",
-            "Attribute": "race",
-            "Group": "Other"
-        },
-        "White": {
-            "Accuracy": 0.817436544221977,
-            "F1": 0.7088989441930619,
-            "Recall": 0.888468809073724,
-            "Precision": 0.589711417816813,
-            "ROC_AUC": 0.9245815851353221,
-            "Count": 6343,
-            "Model": "lightgbm",
-            "Attribute": "race",
-            "Group": "White"
+            "Group": "1"
         }
     }
 }

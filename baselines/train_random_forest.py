@@ -17,9 +17,10 @@ def main():
     print("Loading OHE data for Random Forest...")
     X_train, y_train, X_val, y_val, X_test, y_test = load_preprocessed('ohe')
     
-    # Subsample training data for RF tuning to save time (it's huge)
+    # Subsample training data for RF tuning.
     np.random.seed(42)
-    sample_idx = np.random.choice(len(X_train), size=100000, replace=False)
+    sample_n = min(len(X_train), int(os.environ.get("RF_TUNE_SAMPLE", "2000")))
+    sample_idx = np.random.choice(len(X_train), size=sample_n, replace=False)
     X_train_sub = X_train[sample_idx]
     y_train_sub = y_train[sample_idx]
     

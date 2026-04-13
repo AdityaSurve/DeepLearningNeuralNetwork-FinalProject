@@ -165,7 +165,7 @@ def main():
     if torch.cuda.is_available():
         torch.backends.cudnn.benchmark = True
 
-    default_bs = 4096 if torch.cuda.is_available() else 2048
+    default_bs = 256 if torch.cuda.is_available() else 128
     batch_size = int(os.environ.get("BATCH_SIZE", str(default_bs)))
 
     member_filter = _parse_members_env()

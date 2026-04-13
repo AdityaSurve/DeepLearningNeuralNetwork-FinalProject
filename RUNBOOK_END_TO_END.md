@@ -1,9 +1,9 @@
-# End-to-end runbook (Adult Census Income → train → results)
+# End-to-end runbook (Heart Disease → train → results)
 
-Single data source: **Adult Census Income** from OpenML (via `sklearn.datasets.fetch_openml`).  
+Single data source: **Heart Disease** from OpenML (via `sklearn.datasets.fetch_openml`).  
 **No CSV in the repo** — first run downloads the dataset (then it is cached locally or under `~/scikit_learn_data` on Kaggle).
 
-**Target:** binary **income >50K** (`1`) vs not (`0`).
+**Target:** binary **heart disease present** (`1`) vs absent (`0`).
 
 ---
 
@@ -81,7 +81,7 @@ Default **`hybrid`** uses **`balanced_acc`** for both the validation checkpoint 
 ```powershell
 $env:OBJECTIVE_MODE="hybrid"
 $env:BIAS_MITIGATION="both"
-$env:PROTECTED_ATTRS="sex,race"
+$env:PROTECTED_ATTRS="sex"
 $env:CUSTOM_HIDDEN="256"
 $env:CUSTOM_BLOCKS="2"
 python experiments/run_custom_architecture.py
@@ -104,7 +104,7 @@ python experiments/run_custom_architecture.py
 2. Clone repo and `cd` into `finalproject`.
 3. Run the same flow as §3 with `!python ...` cells.
 
-No dataset attachment is required for Adult; only network for the first fetch.
+No dataset attachment is required; only network for the first OpenML fetch.
 
 ---
 

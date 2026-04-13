@@ -10,27 +10,32 @@ from sklearn.datasets import fetch_openml
 import joblib
 
 
-def load_adult_dataframe():
+def load_heart_dataframe():
     """
-    Adult Census Income (OpenML, version 2). ~49k rows after deduplication.
-    Binary target: 1 if income >50K (~24% positive).
+    UCI Heart Disease (OpenML, version 1). ~303 rows.
+    Binary target: 1 if heart disease is present.
     First run downloads data (cached under scikit_learn_data).
     """
-    print("Fetching Adult Census Income from OpenML (cached after first download)...")
-    raw = fetch_openml("adult", version=2, as_frame=True, parser="auto")
+    print("Fetching Heart Disease data from OpenML (cached after first download)...")
+    raw = fetch_openml("heart-disease", version=1, as_frame=True, parser="auto")
     df = raw.frame.copy()
-    target_col = "class"
+    target_col = "target"
     if target_col not in df.columns:
-        raise ValueError("Adult frame missing 'class' column")
+        raise ValueError("Heart Disease frame missing 'target' column")
 
-    lab = df[target_col].astype(str).str.strip()
-    df[target_col] = (lab == ">50K").astype(np.int64)
+    df[target_col] = df[target_col].astype(float).astype(np.int64)
     df.dropna(subset=[target_col], inplace=True)
+
+    # These are categorical attributes encoded as small integer codes in OpenML.
+    cat_like_cols = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"]
+    for c in cat_like_cols:
+        if c in df.columns:
+            df[c] = df[c].astype("Int64").astype("category")
 
     before = len(df)
     df.drop_duplicates(inplace=True)
     print(f"Dropped {before - len(df)} duplicate rows.")
-    print(f"Target is {target_col} (1 => income >50K)")
+    print(f"Target is {target_col} (1 => heart disease present)")
     return df, target_col
 
 
@@ -87,7 +92,7 @@ def build_preprocessing_pipeline(df, target_col):
 
 
 def preprocess_and_save():
-    df, target_col = load_adult_dataframe()
+    df, target_col = load_heart_dataframe()
 
     X = df.drop(columns=[target_col])
     y = df[target_col].astype(int)
@@ -131,14 +136,14 @@ def preprocess_and_save():
             "cat_cols": cat_cols,
             "ord_features": ord_feature_names,
             "ohe_features": ohe_feature_names,
-            "tabular_dataset": "adult",
+            "tabular_dataset": "heart-disease",
             "target_col": target_col,
         },
         "data/metadata/feature_names.joblib",
     )
 
     with open("data/metadata/active_dataset.txt", "w", encoding="utf-8") as f:
-        f.write("adult\n")
+        f.write("heart-disease\n")
 
     os.makedirs("data/processed", exist_ok=True)
     np.savez_compressed(

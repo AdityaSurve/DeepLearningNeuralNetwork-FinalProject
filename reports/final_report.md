@@ -1,25 +1,37 @@
-# Final project report: Adult Census Income (>50K prediction)
+# Final project report: Heart Disease Detection (binary classification)
 
 ## 1. Project objective
-Tabular deep learning vs classical baselines on **Adult Census Income** (OpenML): predict **income >50K**, with overall metrics and fairness-style breakdowns by **sex** and **race**.
+Tabular deep learning vs classical baselines on **Heart Disease** (OpenML): predict **disease presence (target=1)**, with overall metrics and subgroup-style breakdowns by protected/clinical attributes.
 
 ## 2. Dataset
-Data are loaded via `sklearn.datasets.fetch_openml` in `src/preprocess.py` (no bundled CSV). Numeric and categorical columns are imputed, scaled (numeric), and encoded (one-hot / ordinal) before modeling.
+Data are loaded via `sklearn.datasets.fetch_openml("heart-disease", version=1)` in `src/preprocess.py` (no bundled CSV). Numeric and categorical columns are imputed, scaled (numeric), and encoded (one-hot / ordinal) before modeling.
 
 ## 3. Results & leaderboard
-| Model                               |   roc_auc |   f1_score |   recall |   accuracy |
-|:------------------------------------|----------:|-----------:|---------:|-----------:|
-| ensemble                            |  0.927259 |   0.717748 | 0.836758 |   0.842465 |
-| hist_gradient_boosting              |  0.926978 |   0.709573 | 0.877854 |   0.827982 |
-| xgboost                             |  0.926967 |   0.711008 | 0.875571 |   0.829622 |
-| lightgbm                            |  0.926905 |   0.708571 | 0.884703 |   0.825796 |
-| catboost                            |  0.926061 |   0.70941  | 0.877854 |   0.827845 |
-| ensemble_full                       |  0.925963 |   0.709752 | 0.880708 |   0.827572 |
-| logistic_elasticnet                 |  0.90202  |   0.673584 | 0.852169 |   0.802295 |
-| logistic_regression                 |  0.902019 |   0.672977 | 0.852169 |   0.801749 |
-| mlp                                 |  0.900834 |   0.681393 | 0.748288 |   0.832491 |
-| custom_architecture_hybrid_mit_both |  0.889759 |   0.664497 | 0.75742  |   0.816915 |
-| tabular_transformer                 |  0.792853 |   0.546917 | 0.582192 |   0.769094 |
+| Model                                    |   roc_auc |   f1_score |   recall |   accuracy |
+|:-----------------------------------------|----------:|-----------:|---------:|-----------:|
+| lightgbm                                 |  0.899048 |   0.862069 |     1    |   0.826087 |
+| catboost                                 |  0.891429 |   0.836364 |     0.92 |   0.804348 |
+| ensemble_full                            |  0.878095 |   0.711111 |     0.64 |   0.717391 |
+| ensemble                                 |  0.878095 |   0.711111 |     0.64 |   0.717391 |
+| logistic_elasticnet                      |  0.859048 |   0.823529 |     0.84 |   0.804348 |
+| logistic_regression                      |  0.857143 |   0.823529 |     0.84 |   0.804348 |
+| random_forest                            |  0.855238 |   0.77193  |     0.88 |   0.717391 |
+| hist_gradient_boosting                   |  0.847619 |   0.8      |     0.88 |   0.76087  |
+| xgboost                                  |  0.847619 |   0.8      |     0.88 |   0.76087  |
+| custom_architecture_balanced             |  0.79619  |   0.77551  |     0.76 |   0.76087  |
+| custom_architecture_balanced_mit_both    |  0.761905 |   0.652174 |     0.6  |   0.652174 |
+| custom_architecture_hybrid_mit_both      |  0.742857 |   0.526316 |     0.4  |   0.608696 |
+| custom_architecture_accuracy             |  0.714286 |   0.590909 |     0.52 |   0.608696 |
+| custom_architecture_balanced_mit_class   |  0.706667 |   0.666667 |     0.64 |   0.652174 |
+| custom_architecture_hybrid               |  0.672381 |   0.585366 |     0.48 |   0.630435 |
+| custom_architecture_balanced_mit_reweigh |  0.653333 |   0.604651 |     0.52 |   0.630435 |
+| custom_architecture_hybrid_mit_class     |  0.571429 |   0.721311 |     0.88 |   0.630435 |
+| custom_architecture_accuracy_mit_reweigh |  0.521905 |   0.646154 |     0.84 |   0.5      |
+| tabular_transformer                      |  0.457143 |   0.489796 |     0.48 |   0.456522 |
+| custom_architecture_accuracy_mit_class   |  0.409524 |   0.704225 |     1    |   0.543478 |
+| mlp                                      |  0.361905 |   0.686567 |     0.92 |   0.543478 |
+| custom_architecture_accuracy_mit_both    |  0.327619 |   0.666667 |     0.92 |   0.5      |
+| custom_architecture_hybrid_mit_reweigh   |  0.314286 |   0.704225 |     1    |   0.543478 |
 
 ## 4. Deep learning vs baselines
 The custom model is a compact **residual MLP** (`models/custom_architecture.py`), trained with validation-driven thresholding and optional instance reweighing (`experiments/run_custom_architecture.py`). Tree baselines use `data/processed/data_ord.npz`.
@@ -31,31 +43,32 @@ The custom model is a compact **residual MLP** (`models/custom_architecture.py`)
 ![Best classical vs deep vs ensemble](/outputs/comparisons/custom_vs_baseline.png)
 
 ## 5. Fairness analysis
-Metrics by **sex** and **race** on the held-out test split:
-| Attribute   | Model                               |   Accuracy |       F1 |   Recall |   Precision |   ROC_AUC |   Count |
-|:------------|:------------------------------------|-----------:|---------:|---------:|------------:|----------:|--------:|
-| race        | catboost                            |   0.858955 | 0.698066 | 0.849818 |    0.593853 |  0.919849 |  1463.8 |
-| race        | custom_architecture_hybrid_mit_both |   0.832098 | 0.597217 | 0.669172 |    0.54132  |  0.89149  |  1463.8 |
-| race        | ensemble                            |   0.872435 | 0.687849 | 0.748096 |    0.668987 |  0.923197 |  1463.8 |
-| race        | ensemble_full                       |   0.857647 | 0.688921 | 0.822256 |    0.59654  |  0.921717 |  1463.8 |
-| race        | hist_gradient_boosting              |   0.855326 | 0.685125 | 0.818935 |    0.592701 |  0.922268 |  1463.8 |
-| race        | lightgbm                            |   0.8506   | 0.667534 | 0.806171 |    0.573015 |  0.920814 |  1463.8 |
-| race        | logistic_elasticnet                 |   0.83859  | 0.638187 | 0.753728 |    0.556004 |  0.900885 |  1463.8 |
-| race        | logistic_regression                 |   0.837803 | 0.638625 | 0.756166 |    0.555425 |  0.901224 |  1463.8 |
-| race        | mlp                                 |   0.85348  | 0.617018 | 0.623326 |    0.616568 |  0.89289  |  1463.8 |
-| race        | tabular_transformer                 |   0.771108 | 0.458542 | 0.519318 |    0.428476 |  0.779785 |  1463.8 |
-| race        | xgboost                             |   0.861709 | 0.686327 | 0.796334 |    0.61198  |  0.923649 |  1463.8 |
-| sex         | catboost                            |   0.849161 | 0.680011 | 0.82001  |    0.582001 |  0.92395  |  3659.5 |
-| sex         | custom_architecture_hybrid_mit_both |   0.838059 | 0.633433 | 0.723586 |    0.563265 |  0.890936 |  3659.5 |
-| sex         | ensemble                            |   0.863437 | 0.695584 | 0.781375 |    0.629754 |  0.924906 |  3659.5 |
-| sex         | ensemble_full                       |   0.849274 | 0.683115 | 0.826537 |    0.583182 |  0.923507 |  3659.5 |
-| sex         | hist_gradient_boosting              |   0.850528 | 0.687138 | 0.824866 |    0.590374 |  0.924304 |  3659.5 |
-| sex         | lightgbm                            |   0.848055 | 0.682847 | 0.828877 |    0.581892 |  0.924802 |  3659.5 |
-| sex         | logistic_elasticnet                 |   0.826945 | 0.643066 | 0.795256 |    0.540564 |  0.900516 |  3659.5 |
-| sex         | logistic_regression                 |   0.826537 | 0.641554 | 0.792018 |    0.540134 |  0.900567 |  3659.5 |
-| sex         | mlp                                 |   0.85621  | 0.652783 | 0.669671 |    0.651591 |  0.899378 |  3659.5 |
-| sex         | tabular_transformer                 |   0.782685 | 0.481524 | 0.551366 |    0.438303 |  0.773931 |  3659.5 |
-| sex         | xgboost                             |   0.851329 | 0.684582 | 0.818673 |    0.589751 |  0.924203 |  3659.5 |
+Metrics by **sex** on the held-out test split:
+| Attribute   | Model                                    |   Accuracy |       F1 |   Recall |   Precision |   ROC_AUC |   Count |   Group |
+|:------------|:-----------------------------------------|-----------:|---------:|---------:|------------:|----------:|--------:|--------:|
+| sex         | catboost                                 |   0.835417 | 0.838624 | 0.916667 |    0.776786 |  0.882835 |      23 |     0.5 |
+| sex         | custom_architecture_accuracy             |   0.583333 | 0.591667 | 0.522436 |    0.720238 |  0.666489 |      23 |     0.5 |
+| sex         | custom_architecture_accuracy_mit_both    |   0.572917 | 0.698276 | 0.916667 |    0.584821 |  0.255698 |      23 |     0.5 |
+| sex         | custom_architecture_accuracy_mit_class   |   0.60625  | 0.73399  | 1        |    0.60625  |  0.404202 |      23 |     0.5 |
+| sex         | custom_architecture_accuracy_mit_reweigh |   0.558333 | 0.679487 | 0.839744 |    0.608262 |  0.61485  |      23 |     0.5 |
+| sex         | custom_architecture_balanced             |   0.6125   | 0.613636 | 0.557692 |    0.694444 |  0.754986 |      23 |     0.5 |
+| sex         | custom_architecture_balanced_mit_both    |   0.660417 | 0.638095 | 0.592949 |    0.694444 |  0.73166  |      23 |     0.5 |
+| sex         | custom_architecture_balanced_mit_class   |   0.7375   | 0.711538 | 0.711538 |    0.711538 |  0.73896  |      23 |     0.5 |
+| sex         | custom_architecture_balanced_mit_reweigh |   0.614583 | 0.597826 | 0.516026 |    0.7125   |  0.594551 |      23 |     0.5 |
+| sex         | custom_architecture_hybrid               |   0.483333 | 0.469697 | 0.432692 |    0.513636 |  0.468127 |      23 |     0.5 |
+| sex         | custom_architecture_hybrid_mit_both      |   0.627083 | 0.457971 | 0.387821 |    0.616667 |  0.722934 |      23 |     0.5 |
+| sex         | custom_architecture_hybrid_mit_class     |   0.670833 | 0.753759 | 0.958333 |    0.644872 |  0.590278 |      23 |     0.5 |
+| sex         | custom_architecture_hybrid_mit_reweigh   |   0.60625  | 0.73399  | 1        |    0.60625  |  0.362358 |      23 |     0.5 |
+| sex         | ensemble                                 |   0.725    | 0.702381 | 0.634615 |    0.787879 |  0.860755 |      23 |     0.5 |
+| sex         | ensemble_full                            |   0.725    | 0.702381 | 0.634615 |    0.787879 |  0.860755 |      23 |     0.5 |
+| sex         | hist_gradient_boosting                   |   0.7875   | 0.806366 | 0.878205 |    0.755656 |  0.84099  |      23 |     0.5 |
+| sex         | lightgbm                                 |   0.852083 | 0.868578 | 1        |    0.780075 |  0.907229 |      23 |     0.5 |
+| sex         | logistic_elasticnet                      |   0.820833 | 0.821538 | 0.836538 |    0.807692 |  0.835114 |      23 |     0.5 |
+| sex         | logistic_regression                      |   0.820833 | 0.821538 | 0.836538 |    0.807692 |  0.832799 |      23 |     0.5 |
+| sex         | mlp                                      |   0.577083 | 0.707407 | 0.923077 |    0.607143 |  0.385684 |      23 |     0.5 |
+| sex         | random_forest                            |   0.739583 | 0.769704 | 0.875    |    0.6875   |  0.838675 |      23 |     0.5 |
+| sex         | tabular_transformer                      |   0.452083 | 0.496491 | 0.483974 |    0.611111 |  0.621795 |      23 |     0.5 |
+| sex         | xgboost                                  |   0.7875   | 0.806366 | 0.878205 |    0.755656 |  0.846866 |      23 |     0.5 |
 
 ## 6. Conclusion
-End-to-end pipeline: fetch Adult → preprocess → train baselines and custom PyTorch model → optional tree+DL ensemble → compare → subgroup metrics.
+End-to-end pipeline: fetch heart-disease data → preprocess → train baselines and custom PyTorch model → optional tree+DL ensemble → compare → subgroup metrics.

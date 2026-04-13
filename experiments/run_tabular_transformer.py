@@ -45,7 +45,7 @@ def main():
         torch.backends.cudnn.benchmark = True
     print(f"Using device: {device}")
 
-    batch_size = int(os.environ.get("BATCH_SIZE", "2048"))
+    batch_size = int(os.environ.get("BATCH_SIZE", "128"))
     train_dataset = TensorDataset(
         torch.tensor(X_train, dtype=torch.float32),
         torch.tensor(y_train, dtype=torch.float32),
@@ -88,7 +88,7 @@ def main():
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=max_lr / 25.0, weight_decay=1e-4
     )
-    epochs = int(os.environ.get("TT_EPOCHS", "60"))
+    epochs = int(os.environ.get("TT_EPOCHS", "120"))
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer,
         max_lr=max_lr,

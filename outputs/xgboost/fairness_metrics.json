@@ -1,83 +1,26 @@
 {
     "sex": {
-        "Female": {
-            "Accuracy": 0.9150082918739635,
-            "F1": 0.6483704974271012,
-            "Recall": 0.73828125,
-            "Precision": 0.5779816513761468,
-            "ROC_AUC": 0.9377608998144713,
-            "Count": 2412,
+        "0": {
+            "Accuracy": 0.875,
+            "F1": 0.9230769230769231,
+            "Recall": 0.9230769230769231,
+            "Precision": 0.9230769230769231,
+            "ROC_AUC": 0.8974358974358975,
+            "Count": 16,
             "Model": "xgboost",
             "Attribute": "sex",
-            "Group": "Female"
+            "Group": "0"
         },
-        "Male": {
-            "Accuracy": 0.7876502954962299,
-            "F1": 0.7207931404072884,
-            "Recall": 0.8990641711229946,
-            "Precision": 0.601520572450805,
-            "ROC_AUC": 0.9106450387782842,
-            "Count": 4907,
+        "1": {
+            "Accuracy": 0.7,
+            "F1": 0.6896551724137931,
+            "Recall": 0.8333333333333334,
+            "Precision": 0.5882352941176471,
+            "ROC_AUC": 0.7962962962962963,
+            "Count": 30,
             "Model": "xgboost",
             "Attribute": "sex",
-            "Group": "Male"
-        }
-    },
-    "race": {
-        "Amer-Indian-Eskimo": {
-            "Accuracy": 0.8923076923076924,
-            "F1": 0.5882352941176471,
-            "Recall": 0.5555555555555556,
-            "Precision": 0.625,
-            "ROC_AUC": 0.8869047619047619,
-            "Count": 65,
-            "Model": "xgboost",
-            "Attribute": "race",
-            "Group": "Amer-Indian-Eskimo"
-        },
-        "Asian-Pac-Islander": {
-            "Accuracy": 0.7874396135265701,
-            "F1": 0.725,
-            "Recall": 0.8169014084507042,
-            "Precision": 0.651685393258427,
-            "ROC_AUC": 0.8734465617232808,
-            "Count": 207,
-            "Model": "xgboost",
-            "Attribute": "race",
-            "Group": "Asian-Pac-Islander"
-        },
-        "Black": {
-            "Accuracy": 0.9115853658536586,
-            "F1": 0.7010309278350515,
-            "Recall": 0.8717948717948718,
-            "Precision": 0.5862068965517241,
-            "ROC_AUC": 0.9611613876319758,
-            "Count": 656,
-            "Model": "xgboost",
-            "Attribute": "race",
-            "Group": "Black"
-        },
-        "Other": {
-            "Accuracy": 0.8958333333333334,
-            "F1": 0.7058823529411765,
-            "Recall": 0.8571428571428571,
-            "Precision": 0.6,
-            "ROC_AUC": 0.9721254355400697,
-            "Count": 48,
-            "Model": "xgboost",
-            "Attribute": "race",
-            "Group": "Other"
-        },
-        "White": {
-            "Accuracy": 0.8213778968942141,
-            "F1": 0.711484593837535,
-            "Recall": 0.8802772526780088,
-            "Precision": 0.597008547008547,
-            "ROC_AUC": 0.9246081492657701,
-            "Count": 6343,
-            "Model": "xgboost",
-            "Attribute": "race",
-            "Group": "White"
+            "Group": "1"
         }
     }
 }

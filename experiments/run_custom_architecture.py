@@ -64,8 +64,8 @@ def main():
     print(f"Using device: {device}")
 
     # Unweighted BCE + threshold tuning favors overall accuracy (vs heavy pos_weight → ~72% acc).
-    # On Kaggle T4 (~16 GB), BATCH_SIZE=4096–8192 is usually fine; override via env.
-    default_bs = 4096 if torch.cuda.is_available() else 2048
+    # Heart-disease is small; conservative batch defaults are usually enough.
+    default_bs = 256 if torch.cuda.is_available() else 128
     batch_size = int(os.environ.get("BATCH_SIZE", str(default_bs)))
     dl_kw = _dataloader_kwargs()
     print(
@@ -81,7 +81,7 @@ def main():
     )
 
     # Kamiran–Calders-style reweighing (+ optional class balance) as weighted loss.
-    mitigation = os.environ.get("BIAS_MITIGATION", "both").strip().lower()
+    mitigation = os.environ.get("BIAS_MITIGATION", "none").strip().lower()
     if mitigation not in ("none", "reweigh", "class", "both"):
         raise ValueError(
             "BIAS_MITIGATION must be one of: none, reweigh, class, both"
@@ -89,7 +89,7 @@ def main():
     raw_train_path = "data/processed/X_train_raw.csv"
     prot_cols = [
         c.strip()
-        for c in os.environ.get("PROTECTED_ATTRS", "sex,race").split(",")
+        for c in os.environ.get("PROTECTED_ATTRS", "sex").split(",")
         if c.strip()
     ]
     eff_mitigation = mitigation
@@ -227,9 +227,9 @@ def main():
     )
 
     input_dim = int(X_train.shape[1])
-    hidden_dim = int(os.environ.get("CUSTOM_HIDDEN", "256"))
-    num_blocks = int(os.environ.get("CUSTOM_BLOCKS", "2"))
-    dropout = float(os.environ.get("CUSTOM_DROPOUT", "0.2"))
+    hidden_dim = int(os.environ.get("CUSTOM_HIDDEN", "96"))
+    num_blocks = int(os.environ.get("CUSTOM_BLOCKS", "1"))
+    dropout = float(os.environ.get("CUSTOM_DROPOUT", "0.35"))
     model = CustomTabularNet(
         input_dim=input_dim,
         hidden_dim=hidden_dim,
@@ -258,11 +258,11 @@ def main():
     else:
         criterion = nn.BCEWithLogitsLoss()
         print("Loss: BCEWithLogitsLoss(unweighted)", flush=True)
-    max_lr = 2e-3
+    max_lr = float(os.environ.get("CUSTOM_MAX_LR", "8e-4"))
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=max_lr / 25.0, weight_decay=2e-4
     )
-    epochs = 55
+    epochs = int(os.environ.get("CUSTOM_EPOCHS", "120"))
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer,
         max_lr=max_lr,
@@ -311,7 +311,7 @@ def main():
         optimizer,
         scheduler,
         epochs=epochs,
-        patience=18,
+        patience=25,
         checkpoint_path=checkpoint_path,
         device=device,
         checkpoint_on_val_acc_at_best_threshold=True,

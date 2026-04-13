@@ -64,7 +64,7 @@ def main():
     # Load test labels and raw features
     df_raw = pd.read_csv('data/processed/X_test_raw.csv')
     
-    protected_attrs = ["sex", "race"]
+    protected_attrs = [c.strip() for c in os.environ.get("FAIRNESS_ATTRS", "sex").split(",") if c.strip()]
     available_attrs = [a for a in protected_attrs if a in df_raw.columns]
     
     if not available_attrs:

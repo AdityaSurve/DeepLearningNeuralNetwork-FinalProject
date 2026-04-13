@@ -1,10 +1,10 @@
 # Dataset overview
 
-- **Source**: UCI / OpenML Adult Census Income (version 2)
-- **Shape**: 48842 rows, 15 columns
-- **Target**: `class` (1 => income >50K)
+- **Source**: UCI / OpenML Heart Disease (version 1)
+- **Shape**: 303 rows, 14 columns
+- **Target**: `target` (1 => heart disease present)
 - **Sex column**: ['sex']
-- **Race column**: ['race']
+- **Race column**: []
 
 ## Observations
 - See `reports/tables/column_summary.csv` for dtypes and missingness.

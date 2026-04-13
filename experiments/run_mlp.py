@@ -43,7 +43,7 @@ def main():
     device = get_device()
     print(f"Using device: {device}")
 
-    batch_size = 1024
+    batch_size = int(os.environ.get("BATCH_SIZE", "128"))
     train_dataset = TensorDataset(
         torch.tensor(X_train, dtype=torch.float32),
         torch.tensor(y_train, dtype=torch.float32),
@@ -72,7 +72,7 @@ def main():
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=max_lr / 25.0, weight_decay=1e-4
     )
-    epochs = 80
+    epochs = int(os.environ.get("MLP_EPOCHS", "120"))
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
         optimizer,
         max_lr=max_lr,

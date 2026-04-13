@@ -1,83 +1,26 @@
 {
     "sex": {
-        "Female": {
-            "Accuracy": 0.8992537313432836,
-            "F1": 0.5983471074380166,
-            "Recall": 0.70703125,
-            "Precision": 0.5186246418338109,
-            "ROC_AUC": 0.92298563601577,
-            "Count": 2412,
-            "Model": "logistic_regression",
-            "Attribute": "sex",
-            "Group": "Female"
-        },
-        "Male": {
-            "Accuracy": 0.7538210719380477,
-            "F1": 0.6847599164926931,
-            "Recall": 0.8770053475935828,
-            "Precision": 0.5616438356164384,
-            "ROC_AUC": 0.878148041018598,
-            "Count": 4907,
-            "Model": "logistic_regression",
-            "Attribute": "sex",
-            "Group": "Male"
-        }
-    },
-    "race": {
-        "Amer-Indian-Eskimo": {
-            "Accuracy": 0.8615384615384616,
-            "F1": 0.5263157894736842,
-            "Recall": 0.5555555555555556,
-            "Precision": 0.5,
-            "ROC_AUC": 0.861111111111111,
-            "Count": 65,
-            "Model": "logistic_regression",
-            "Attribute": "race",
-            "Group": "Amer-Indian-Eskimo"
-        },
-        "Asian-Pac-Islander": {
-            "Accuracy": 0.7584541062801933,
-            "F1": 0.7093023255813954,
-            "Recall": 0.8591549295774648,
-            "Precision": 0.6039603960396039,
-            "ROC_AUC": 0.8579121789560894,
-            "Count": 207,
-            "Model": "logistic_regression",
-            "Attribute": "race",
-            "Group": "Asian-Pac-Islander"
-        },
-        "Black": {
-            "Accuracy": 0.9024390243902439,
-            "F1": 0.6595744680851063,
-            "Recall": 0.7948717948717948,
-            "Precision": 0.5636363636363636,
-            "ROC_AUC": 0.9377828054298643,
-            "Count": 656,
-            "Model": "logistic_regression",
-            "Attribute": "race",
-            "Group": "Black"
-        },
-        "Other": {
+        "0": {
             "Accuracy": 0.875,
-            "F1": 0.625,
-            "Recall": 0.7142857142857143,
-            "Precision": 0.5555555555555556,
-            "ROC_AUC": 0.9512195121951219,
-            "Count": 48,
+            "F1": 0.9230769230769231,
+            "Recall": 0.9230769230769231,
+            "Precision": 0.9230769230769231,
+            "ROC_AUC": 0.8461538461538463,
+            "Count": 16,
             "Model": "logistic_regression",
-            "Attribute": "race",
-            "Group": "Other"
+            "Attribute": "sex",
+            "Group": "0"
         },
-        "White": {
-            "Accuracy": 0.7915812706921015,
-            "F1": 0.6729341909945572,
-            "Recall": 0.856962822936358,
-            "Precision": 0.5539714867617108,
-            "ROC_AUC": 0.8980960209184907,
-            "Count": 6343,
+        "1": {
+            "Accuracy": 0.7666666666666667,
+            "F1": 0.72,
+            "Recall": 0.75,
+            "Precision": 0.6923076923076923,
+            "ROC_AUC": 0.8194444444444444,
+            "Count": 30,
             "Model": "logistic_regression",
-            "Attribute": "race",
-            "Group": "White"
+            "Attribute": "sex",
+            "Group": "1"
         }
     }
 }

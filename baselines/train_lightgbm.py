@@ -27,9 +27,9 @@ def main():
     start_time = time.time()
     
     clf = lgb.LGBMClassifier(
-        n_estimators=1000,
+        n_estimators=300,
         learning_rate=0.05,
-        max_depth=6,
+        max_depth=4,
         subsample=0.8,
         colsample_bytree=0.8,
         scale_pos_weight=scale_pos_weight,
@@ -37,7 +37,7 @@ def main():
         n_jobs=-1
     )
     
-    clf.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_val, y_val)], eval_metric='auc', callbacks=[lgb.early_stopping(50), lgb.log_evaluation(50)])
+    clf.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_val, y_val)], eval_metric='auc', callbacks=[lgb.early_stopping(20), lgb.log_evaluation(50)])
     
     print(f"Training took {time.time() - start_time:.2f} seconds")
     print(f"Best iteration: {clf.best_iteration_}")
